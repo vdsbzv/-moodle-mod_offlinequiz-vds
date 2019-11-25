@@ -241,11 +241,11 @@ function offlinequiz_get_empty_groups($offlinequiz) {
     $emptygroups = array();
 
     if ($groups = $DB->get_records('offlinequiz_groups',
-                                   array('offlinequizid' => $offlinequiz->id), 'number', '*', 0, $offlinequiz->numgroups)) {
+                                   array('offlinequizid' => $offlinequiz->id), 'groupnumber', '*', 0, $offlinequiz->numgroups)) {
         foreach ($groups as $group) {
             $questions = offlinequiz_get_group_question_ids($offlinequiz, $group->id);
             if (count($questions) < 1) {
-                $emptygroups[] = $group->number;
+                $emptygroups[] = $group->groupnumber;
             }
         }
     }
@@ -666,7 +666,7 @@ function offlinequiz_update_question_instance($offlinequiz, $questionid, $grade)
         $DB->set_field('offlinequiz_group_questions', 'maxmark', $grade, array('id' => $groupquestionid));
     }
 
-    $groups = $DB->get_records('offlinequiz_groups', array('offlinequizid' => $offlinequiz->id), 'number', '*', 0,
+    $groups = $DB->get_records('offlinequiz_groups', array('offlinequizid' => $offlinequiz->id), 'groupnumber', '*', 0,
                 $offlinequiz->numgroups);
 
     // Now change the maxmark of the question instance in the template question usages of the offlinequiz groups.
@@ -1057,7 +1057,7 @@ function offlinequiz_get_group($offlinequiz, $groupnumber) {
     global $DB;
 
     if (!$offlinequizgroup = $DB->get_record('offlinequiz_groups',
-                                              array('offlinequizid' => $offlinequiz->id, 'number' => $groupnumber))) {
+                                              array('offlinequizid' => $offlinequiz->id, 'groupnumber' => $groupnumber))) {
         if ($groupnumber > 0 && $groupnumber <= $offlinequiz->numgroups) {
             $offlinequizgroup = offlinequiz_add_group( $offlinequiz->id, $groupnumber);
         }
@@ -1078,7 +1078,7 @@ function offlinequiz_add_group($offlinequizid, $groupnumber) {
 
     $offlinequizgroup = new StdClass();
     $offlinequizgroup->offlinequizid = $offlinequizid;
-    $offlinequizgroup->number = $groupnumber;
+    $offlinequizgroup->groupnumber = $groupnumber;
 
     // Note: numberofpages and templateusageid will be filled later.
 
@@ -1470,7 +1470,7 @@ function offlinequiz_delete_template_usages($offlinequiz, $deletefiles = true) {
     global $CFG, $DB, $OUTPUT;
 
     if ($groups = $DB->get_records('offlinequiz_groups',
-                                   array('offlinequizid' => $offlinequiz->id), 'number', '*', 0, $offlinequiz->numgroups)) {
+                                   array('offlinequizid' => $offlinequiz->id), 'groupnumber', '*', 0, $offlinequiz->numgroups)) {
         foreach ($groups as $group) {
             if ($group->templateusageid) {
                 question_engine::delete_questions_usage_by_activity($group->templateusageid);
@@ -1595,10 +1595,10 @@ function offlinequiz_print_partlist($offlinequiz, &$coursecontext, &$systemconte
     $checkoption = optional_param('checkoption', 0, PARAM_INT);
     $listid = optional_param('listid', '', PARAM_INT);
     $lists = $DB->get_records_sql("
-            SELECT id, number, name
+            SELECT id, listnumber, name
               FROM {offlinequiz_p_lists}
              WHERE offlinequizid = :offlinequizid
-          ORDER BY number ASC",
+          ORDER BY listnumber ASC",
             array('offlinequizid' => $offlinequiz->id));
 
     // First get roleids for students from leagcy.
@@ -1659,10 +1659,8 @@ function offlinequiz_print_partlist($offlinequiz, &$coursecontext, &$systemconte
     $table = new offlinequiz_partlist_table('mod-offlinequiz-participants', 'participants.php', $tableparams);
 
     // Define table columns.
-    $tablecolumns = array('checkbox', 'picture', 'fullname', $offlinequizconfig->ID_field, 'number', 'attempt', 'checked');
-    $tableheaders = array('<input type="checkbox" name="toggle" onClick="' .
-                          'if (this.checked) {select_all_in(\'DIV\', null, \'tablecontainer\');} ' .
-                          ' else {deselect_all_in(\'DIV\', null, \'tablecontainer\');}"/>',
+    $tablecolumns = array('checkbox', 'picture', 'fullname', $offlinequizconfig->ID_field, 'listnumber', 'attempt', 'checked');
+    $tableheaders = array('<input type="checkbox" name="toggle" class="select-all-checkbox"/>',
             '', get_string('fullname'), get_string($offlinequizconfig->ID_field), get_string('participantslist', 'offlinequiz'),
             get_string('attemptexists', 'offlinequiz'), get_string('present', 'offlinequiz'));
 

@@ -74,6 +74,7 @@ $string['calibratescanner'] = 'Calibrate scanner';
 $string['cannoteditafterattempts'] = 'You cannot add or remove questions because there are already complete results. ({$a})';
 $string['category'] = 'Category';
 $string['changed'] = 'Result has been changed.';
+$string['changeevaluationmode'] = 'Change the way how the evaluation is done. Only possible if allowed by the administrator.';
 $string['checkparts'] = 'Mark selected participants as present';
 $string['checkuserid'] = 'Check group/user ID';
 $string['chooseagroup'] = 'Choose a group...';
@@ -81,6 +82,9 @@ $string['closebeforeopen'] = 'Could not update the offline quiz. You have specif
 $string['closestudentview'] = 'Close Student View';
 $string['closewindow'] = 'Close Window';
 $string['cmmissing'] = 'The course module for the offline quiz with ID {$a} is missing';
+$string['configdisableimgnewlines'] = 'This option disables new lines before and after images in the pdf question sheets. Warning: This might lead to formatting problems.';
+$string['configexperimentalevaluation'] = 'Experimental evaluation of answer sheets';
+$string['configexperimentalevaluationdesc'] = 'DO NOT USE IN PRODUCTION! This option is used for alpha tests of the ne evaluation algorithm. If this option is turned to yes, you can turn it on in the options of the offlinequiz instance. We highly discourage to use this option. There is no support at all for lost data due to turning on this option.';
 $string['configintro'] = 'The values you set here are used as default values for the settings of new offline quizzes.';
 $string['configkeepfilesfordays'] = 'Determine how many days the uploaded image files are kept in temporary storage. During this time the image files are available in the offline quiz admin report.';
 $string['configonlylocalcategories'] = 'No shared question categories allowed.';
@@ -185,6 +189,8 @@ $string['eventreportviewed'] = 'Offline quiz report viewed';
 $string['eventresultsregraded'] = 'Offline quiz results regraded';
 $string['everythingon'] = 'enabled';
 $string['excelformat'] = 'Excel spreadsheet (XLSX)';
+$string['experimentalevaluation'] = 'Experimental evaluation of answer sheets';
+$string['experimentalevaluation_help'] = 'Experimental evaluation of answer sheets';
 $string['fileprefixanswer'] = 'answer_form';
 $string['fileprefixcorrection'] = 'correction_form';
 $string['fileprefixform'] = 'question_form';
@@ -192,6 +198,7 @@ $string['fileprefixparticipants'] = 'participants_list';
 $string['fileformat'] = 'Format for question sheets';
 $string['fileformat_help'] = 'Choose whether you want your question sheets in PDF, DOCX or TEX format. Answer forms and correction sheets will always be generated in PDF format.';
 $string['filesizetolarge'] = 'Some of your image files are very large. The dimensions will be resized during the interpretation. Please try to scan with a resolution between 200 and 300 dpi and in black and white mode. This will speed up the interpretation next time.';
+$string['filterbytags'] = 'Filter by tags...';
 $string['fontsize'] = 'Fontsize';
 $string['forautoanalysis'] = 'For automatic analysis';
 $string['formforcorrection'] = 'Correction form for group {$a}';
@@ -223,6 +230,8 @@ $string['group'] = 'Group';
 $string['groupoutofrange'] = 'Group was out of range and replaced with group A.';
 $string['groupquestions'] = 'Group Questions';
 $string['hasresult'] = 'Result exists';
+$string['hotspotdeletiontask'] = 'Deletion of hotspots';
+$string['html'] = 'HTML';
 $string['idnumber'] = 'ID number';
 $string['imagefile'] = 'Image file';
 $string['imagenotfound'] = 'Image file: {$a} not found!';
@@ -331,6 +340,7 @@ $string['noquestionsonpage'] = 'Empty page';
 $string['noquestionselected'] = 'No questions selected!';
 $string['noresults'] = 'There are no results.';
 $string['noreview'] = 'You are not allowed to review this offline quiz';
+$string['notagselected'] = 'No tag selected';
 $string['nothingtodo'] = 'Nothing to do!';
 $string['notxtfile'] = 'No TXT file';
 $string['notyetgraded'] = 'Not yet graded';
@@ -355,6 +365,7 @@ $string['offlinequizopenedon'] = 'This offline quiz opened at {$a}';
 $string['offlinequizsettings'] = 'Offline settings';
 $string['offlinequiz:addinstance'] = 'Add an offline quiz';
 $string['offlinequiz:attempt'] = 'Attempt quizzes';
+$string['offlinequiz:changeevaluationmode'] = 'Make it possible to change the evaluationmode. WARNING: DO NOT USE IN PRODUCTION SYSTEMS!';
 $string['offlinequizcloses'] = 'Offline Quiz closes';
 $string['offlinequiz:createofflinequiz'] = 'Create offline quiz forms';
 $string['offlinequiz:deleteattempts'] = 'Delete offline quiz results';
@@ -382,7 +393,7 @@ $string['outof'] = '{$a->grade} out of a maximum of {$a->maxgrade}';
 $string['outofshort'] = '{$a->grade}/{$a->maxgrade}';
 $string['overallfeedback'] = 'Overall feedback';
 $string['overview'] = 'Overview';
-$string['overviewdownload_help'] = '';
+$string['overviewdownload_help'] = 'Download Overview';
 $string['pagecorrected'] = 'Corrected sheet of participants list imported';
 $string['pageevaluationtask'] = 'Answer sheet evaluation for the offlinequiz-plugin';
 $string['pageimported'] = 'Sheet of participants list imported';
@@ -438,6 +449,7 @@ $string['questioninfocorrectanswers'] = 'correct answers';
 $string['questioninfonone'] = 'Nothing';
 $string['questioninfoqtype'] = 'Question type';
 $string['questionname'] = 'Question name';
+$string['questionpage'] = 'Page';
 $string['questionsheet'] = 'Question sheet';
 $string['questionsheetlatextemplate'] = '\documentclass[12pt,a4paper]{article}
 \textwidth 16truecm
@@ -513,7 +525,7 @@ $string['recurse'] = 'Include questions from subcategories too';
 $string['refreshpreview'] = 'Refresh preview';
 $string['regrade'] = 'Regrade';
 $string['regradedisplayexplanation'] = '<b>Attention:</b> Regrading will not change marks that have been overwritten manually!';
-$string['regradinginfo'] = 'If you change the score for a question, you must regrade the offline quiz to update the participants’ results.';
+$string['regradinginfo'] = 'If you change the score for a question, you must regrade the offline quiz to update the participants results.';
 $string['regradingquiz'] = 'Regrading';
 $string['regradingresult'] = 'Regrading result for user {$a}...';
 $string['reloadpreview'] = 'Reload preview';
@@ -555,6 +567,14 @@ This option can only be activated if the option "The attempt" is activated. If a
 <tr><td style="vertical-align: top;"><b>Marks</b></td><td>
 The group (e.g. B), scores (achieved grade, total grade for questions, achieved in percent, e.g. 40/80 (50)) and the grade (e.g. 50 out of a maximum of 100) are displayed.
 Additionally, if "The attempt" is selected, the achieved score and the maximum score are shown for every question.
+</td></tr>
+<tr><td style="vertical-align: top;"><b>Specific feedback</b></td><td>
+Feedback that depens on what response the student gave.
+</td></tr>
+<tr><td style="vertical-align: top;"><b>General feedback</b></td><td>
+<p>General feedback is shown to the student after the results were imported.
+Unlike specific feedback, which depends on the question type and what response the student gave, the same general feedback text is shown to all students.</p>
+<p></p><p>You can use the general feedback to give students a fully worked answer and perhaps a link to more information they can use if they did not understand the questions.</p>
 </td></tr>
 <tr><td style="vertical-align: top;"><b>Right Answers</b></td><td>
 It is shown which answers are correct or wrong. This option is only available if "The attempt" is set.
@@ -631,6 +651,7 @@ $string['statistics'] = 'Statistics';
 $string['statisticsplural'] = 'Statistics';
 $string['statsoverview'] = 'Statistics Overview';
 $string['studycode'] = 'Study code';
+$string['temporaryfiledeletiontask'] = 'Delete temporary files';
 $string['theattempt'] = 'The attempt';
 $string['timesup'] = 'Time is up!';
 $string['totalmarksx'] = 'Total of marks: {$a}';

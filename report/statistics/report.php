@@ -88,7 +88,7 @@ class offlinequiz_statistics_report extends offlinequiz_default_report {
         }
 
         if (!$groups = $DB->get_records('offlinequiz_groups',
-                array('offlinequizid' => $offlinequiz->id), 'number', '*', 0, $offlinequiz->numgroups)) {
+                array('offlinequizid' => $offlinequiz->id), 'groupnumber', '*', 0, $offlinequiz->numgroups)) {
             print_error('nogroups', 'offlinequiz', $CFG->wwwroot . '/course/view.php?id=' .
                 $COURSE->id, $scannedpage->offlinequizid);
         }
@@ -103,7 +103,7 @@ class offlinequiz_statistics_report extends offlinequiz_default_report {
             $pageoptions['offlinegroup'] = $groupnumber;
             $offlinequiz->groupnumber = $groupnumber;
             $offlinequiz->sumgrades = $DB->get_field('offlinequiz_groups', 'sumgrades',
-                    array('offlinequizid' => $offlinequiz->id, 'number' => $groupnumber));
+                    array('offlinequizid' => $offlinequiz->id, 'groupnumber' => $groupnumber));
 
             if ($offlinegroup = offlinequiz_get_group($offlinequiz, $groupnumber)) {
                 $offlinequiz->groupid = $offlinegroup->id;
@@ -259,11 +259,10 @@ class offlinequiz_statistics_report extends offlinequiz_default_report {
 
             if (!$questionid) {
                 $this->print_offlinequiz_group_selector($cm, $groups, $groupnumber, $pageoptions);
-                if ($statmode == 'statsoverview') {
-                    if ($offlinequiz->sumgrades == -1 || $differentquestions) {
-                        echo $OUTPUT->box_start();
-                        echo $OUTPUT->notification(get_string('remarks', 'offlinequiz_statistics') . ':', 'notifynote');
-                    }
+                echo '<br/>';
+                if ($statmode == 'statsoverview' && ($offlinequiz->sumgrades == -1 || $differentquestions)) {
+                    echo $OUTPUT->box_start();
+                    $notificationmessage = get_string('remarks', 'offlinequiz_statistics') . ":<br />";
                     if ($offlinequiz->sumgrades == -1) {
                         echo $OUTPUT->notification('- ' . get_string('differentsumgrades', 'offlinequiz_statistics',
                                 implode(', ', $sumgrades)), 'notifynote');
@@ -439,12 +438,14 @@ class offlinequiz_statistics_report extends offlinequiz_default_report {
      */
     private function print_offlinequiz_group_selector($cm, $groups, $groupnumber, $pageoptions) {
         global $CFG, $OUTPUT;
+		
 
         $options = array();
         $letterstr = 'ABCDEFGH';
         $prefix = get_string('statisticsforgroup', 'offlinequiz_statistics');
+        $options[0] = get_string('allgroups', 'offlinequiz_statistics');
         foreach ($groups as $group) {
-            $options[$group->number] = $prefix . ' ' . $letterstr[$group->number - 1];
+            $options[$group->groupnumber] = $prefix . ' ' . $letterstr[$group->groupnumber - 1];
         }
         $urlparams = array('id' => $cm->id, 'mode' => 'statistics', 'statmode' => $pageoptions['statmode']);
         if (key_exists('offlinegroup', $pageoptions)) {
@@ -452,8 +453,7 @@ class offlinequiz_statistics_report extends offlinequiz_default_report {
         }
 
         $url = new moodle_url($CFG->wwwroot . '/mod/offlinequiz/report.php', $urlparams);
-        echo $OUTPUT->single_select($url, 'offlinegroup', $options, $groupnumber,
-                array(0 => get_string('allgroups', 'offlinequiz_statistics')));
+        echo $OUTPUT->single_select($url, 'offlinegroup', $options, $groupnumber, null);
     }
 
 

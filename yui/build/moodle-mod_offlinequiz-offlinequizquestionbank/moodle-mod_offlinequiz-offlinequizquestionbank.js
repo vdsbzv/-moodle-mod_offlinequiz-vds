@@ -27,11 +27,11 @@ YUI.add('moodle-mod_offlinequiz-offlinequizquestionbank', function (Y, NAME) {
  */
 
 var CSS = {
-        QBANKLOADING:       'div.questionbankloading',
-        ADDQUESTIONLINKS:   'ul.menu a.questionbank',
-        ADDTOQUIZCONTAINER: 'td.addtoofflinequizaction',
-        PREVIEWCONTAINER:   'td.previewaction',
-        SEARCHOPTIONS:      '#advancedsearch'
+    QBANKLOADING:       'div.questionbankloading',
+    ADDQUESTIONLINKS:   '.menu [data-action="questionbank"]',
+    ADDTOQUIZCONTAINER: 'td.addtoofflinequizaction',
+    PREVIEWCONTAINER:   'td.previewaction',
+    SEARCHOPTIONS:      '#advancedsearch'
 };
 
 var PARAMS = {
@@ -48,10 +48,11 @@ Y.extend(POPUP, Y.Base, {
     dialogue: null,
     addonpage: 0,
     searchRegionInitialised: false,
+    tags: '',
 
     create_dialogue: function() {
         // Create a dialogue on the page and hide it.
-        config = {
+        var config = {
             headerContent : '',
             bodyContent : Y.one(CSS.QBANKLOADING),
             draggable : true,
@@ -101,11 +102,6 @@ Y.extend(POPUP, Y.Base, {
     load_content : function(queryString) {
         this.dialogue.bodyNode.append(this.loadingDiv);
 
-        // If to support old IE.
-        if (window.history.replaceState) {
-            window.history.replaceState(null, '', M.cfg.wwwroot + '/mod/offlinequiz/edit.php' + queryString);
-        }
-
         Y.io(M.cfg.wwwroot + '/mod/offlinequiz/questionbank.ajax.php' + queryString, {
             method: 'GET',
             on: {
@@ -128,14 +124,52 @@ Y.extend(POPUP, Y.Base, {
 
 
         this.dialogue.bodyNode.setHTML(result.contents);
+        if(Y.one('#qbheadercheckbox')) {
+             Y.one('#qbheadercheckbox').on('click', function(e) {
+                if(e._currentTarget.checked === true) {
+                    Y.all('.questionbankformforpopup .select-multiple-checkbox').set('checked', 'true');
+                }
+                else {
+                    Y.all('.questionbankformforpopup .select-multiple-checkbox').set('checked', '');
+                }
+            });
+        }
+
         Y.use('moodle-question-chooser', function() {M.question.init_chooser({});});
         this.dialogue.bodyNode.one('form').delegate('change', this.options_changed, '.searchoptions', this);
-
         if (this.dialogue.visible) {
             Y.later(0, this.dialogue, this.dialogue.centerDialogue);
         }
-        M.question.qbankmanager.init();
+        require(
+                [
+                        'jquery',
+                    'core/form-autocomplete'
+                ],
+                function(
+                    $,
+                    AutoComplete
+                ) {
+                    var root = $('[class="tag-condition-container"]');
+                    var selectElement = root.find('[data-region="tag-select"]');
+                    var loadingContainer = root.find('[data-region="overlay-icon-container"]');
+                    var placeholderText = M.str.offlinequiz["filterbytags"];
+                    var noSelectionText = M.str.offlinequiz["notagselected"];
 
+                    AutoComplete.enhance(
+                        selectElement, // Element to enhance.
+                        false, // Don't allow support for creating new tags.
+                        false, // Don't allow AMD module to handle loading new tags.
+                        placeholderText, // Placeholder text.
+                        false, // Make search case insensitive.
+                        true, // Show suggestions for tags.
+                        noSelectionText // Text when no tags are selected.
+                    ).always(function() {
+                        // Hide the loading icon once the autocomplete has initialised.
+                        loadingContainer.addClass('hidden');
+                    });
+
+        });
+        Y.on(M.core.event.FILTER_CONTENT_UPDATED,this.options_changed, this);
         this.searchRegionInitialised = false;
         if (this.dialogue.get('visible')) {
             this.initialiseSearchRegion();
@@ -168,7 +202,10 @@ Y.extend(POPUP, Y.Base, {
             openpopup(e, {
                 url: e.currentTarget.get('href'),
                 name: 'questionpreview',
-                options: 'height=600,width=800,top=0,left=0,menubar=0,location=0,scrollbars,resizable,toolbar,status,directories=0,fullscreen=0,dependent'
+                options: 'height=600,width=800,top=0,'*
+                + 'left=0,menubar=0,location=0,scrollbars,'
+                + 'resizable,toolbar,status,directories=0,'
+                + 'fullscreen=0,dependent'
             });
             return;
         }
@@ -185,8 +222,29 @@ Y.extend(POPUP, Y.Base, {
     },
 
     options_changed: function(e) {
-        e.preventDefault();
-        this.load_content('?' + Y.IO.stringify(e.currentTarget.get('form')));
+        if(e && e.currentTarget && e.currentTarget.get) {
+            e.preventDefault();
+            this.load_content('?' + Y.IO.stringify(e.currentTarget.get('form')));
+        } else {
+            var classes = e.nodes._nodes[0].className;
+            if(classes.includes("form-autocomplete-selection") && classes.includes("form-autocomplete-multiple")) {
+                var newtags = this.get_tags(e.nodes._nodes[0].children);
+                if(newtags !== this.tags) {
+                    this.tags = newtags;
+                    var displayoptions = Y.IO.stringify(Y.one('#displayoptions'));
+                    this.load_content('?' + displayoptions );
+                    window.onbeforeunload = null;
+                }
+            }
+        }
+    },
+
+    get_tags: function(nodes) {
+        var result = '';
+        for(node in nodes) {
+            result += nodes[node].textContent;
+        }
+        return result;
     },
 
     initialiseSearchRegion: function() {
@@ -209,7 +267,6 @@ M.mod_offlinequiz.offlinequizquestionbank.init = function() {
     return new POPUP();
 };
 
-
 }, '@VERSION@', {
     "requires": [
         "base",
@@ -219,6 +276,8 @@ M.mod_offlinequiz.offlinequizquestionbank.init = function() {
         "io-form",
         "yui-later",
         "moodle-question-qbankmanager",
-        "moodle-core-notification-dialogue"
+        "moodle-question-chooser",
+        "moodle-question-searchform",
+        "moodle-core-notification"
     ]
 });

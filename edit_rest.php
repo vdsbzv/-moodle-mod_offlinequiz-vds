@@ -112,9 +112,9 @@ switch($requestmethod) {
                             break;
                         }
                         if ($structure->update_slot_maxmark($slot, $maxmark)) {
-                            // Recalculate the sumgrades for all groups
-                            if ($groups = $DB->get_records('offlinequiz_groups', array('offlinequizid' => $offlinequiz->id), 'number',
-                                '*', 0, $offlinequiz->numgroups)) {
+                            // Recalculate the sumgrades for all groups.
+                            if ($groups = $DB->get_records('offlinequiz_groups', array('offlinequizid' => $offlinequiz->id),
+                                'groupnumber', '*', 0, $offlinequiz->numgroups)) {
                                 foreach ($groups as $group) {
                                    $sumgrade = offlinequiz_update_sumgrades($offlinequiz, $group->id);
                                 }

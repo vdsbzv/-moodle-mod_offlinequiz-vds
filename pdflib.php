@@ -28,7 +28,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/moodlelib.php');
-require_once($CFG->libdir . '/pdflib.php');
+require_once($CFG->dirroot . '/mod/offlinequiz/lib/pdflib.php');
 require_once($CFG->libdir . '/questionlib.php');
 require_once($CFG->dirroot . '/question/type/questionbase.php');
 require_once($CFG->dirroot . '/filter/tex/filter.php');
@@ -405,7 +405,7 @@ function offlinequiz_create_pdf_question(question_usage_by_activity $templateusa
     global $CFG, $DB, $OUTPUT;
 
     $letterstr = 'abcdefghijklmnopqrstuvwxyz';
-    $groupletter = strtoupper($letterstr[$group->number - 1]);
+    $groupletter = strtoupper($letterstr[$group->groupnumber - 1]);
 
     $coursecontext = context_course::instance($courseid);
 
@@ -627,7 +627,6 @@ function offlinequiz_create_pdf_question(question_usage_by_activity $templateusa
                 $pdf->Cell(4, round($offlinequiz->fontsize / 2), "$number)  ", 0, 0, 'R');
                 $pdf->SetFont('FreeSans', '', $offlinequiz->fontsize);
             }
-
             $pdf->writeHTMLCell(165,  round($offlinequiz->fontsize / 2), $pdf->GetX(), $pdf->GetY() + 0.3, $html);
             $pdf->Ln();
 
@@ -770,10 +769,16 @@ function offlinequiz_create_pdf_question(question_usage_by_activity $templateusa
                 $pdf->Cell ( 4, round ( $offlinequiz->fontsize / 2 ), "$number)  ", 0, 0, 'R' );
                 $pdf->SetFont ( 'FreeSans', '', $offlinequiz->fontsize );
             }
+
+            // This removes span attribute added by TEX filter which created extra line break after every LATEX formula.
+            if ($offlinequiz->disableimgnewlines) {
+                $html = preg_replace("/(<span class=\"MathJax_Preview\">.+?)+(title=\"TeX\" >)/ms", "", $html);
+                $html = preg_replace("/<\/a><\/span>/ms", "", $html);
+                $html = preg_replace("/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/ms", "", $html);
+            }
             
             $pdf->writeHTMLCell ( 165, round ( $offlinequiz->fontsize / 2 ), $pdf->GetX (), $pdf->GetY () + 0.3, $html );
             $pdf->Ln ();
-            
             if ($pdf->is_overflowing ()) {
                 $pdf->backtrack ();
                 $pdf->AddPage ();
@@ -843,7 +848,7 @@ function offlinequiz_create_pdf_answer($maxanswers, $templateusage, $offlinequiz
     global $CFG, $DB, $OUTPUT, $USER;
 
     $letterstr = ' abcdefghijklmnopqrstuvwxyz';
-    $groupletter = strtoupper($letterstr[$group->number]);
+    $groupletter = strtoupper($letterstr[$group->groupnumber]);
 
     $fm = new stdClass();
     $fm->q = 0;
@@ -858,7 +863,7 @@ function offlinequiz_create_pdf_answer($maxanswers, $templateusage, $offlinequiz
     }
     $pdf->set_title($title);
     $pdf->group = $groupletter;
-    $pdf->groupid = $group->number;
+    $pdf->groupid = $group->groupnumber;
     $pdf->offlinequiz = $offlinequiz->id;
     $pdf->formtype = 4;
     $pdf->colwidth = 7 * 6.5;
@@ -965,10 +970,6 @@ function offlinequiz_create_pdf_answer($maxanswers, $templateusage, $offlinequiz
 
         $pdf->Ln(6.5);
 
-//         // Save the answer page number in the group questions table.
-//          $DB->set_field('offlinequiz_group_questions', 'pagenumber', $page, array('offlinequizid' => $offlinequiz->id,
-//                 'offlinegroupid' => $group->id, 'questionid' => $question->id));
-
         // Switch to next column if necessary.
         if (($number + 1) % 24 == 0) {
             $pdf->SetY($offsety);
@@ -984,8 +985,8 @@ function offlinequiz_create_pdf_answer($maxanswers, $templateusage, $offlinequiz
         $number ++;
     }
 
-    // Save the number of pages in the group questions table.
-    $DB->set_field('offlinequiz_groups', 'numberofpages', $page, array('id' => $group->id));
+    $group->numberofpages = $page;
+    $DB->update_record('offlinequiz_groups', $group);
 
     $fs = get_file_storage();
 
@@ -1067,7 +1068,7 @@ function offlinequiz_create_pdf_participants($offlinequiz, $courseid, $list, $co
     }
 
     $pdf = new offlinequiz_participants_pdf('P', 'mm', 'A4');
-    $pdf->listno = $list->number;
+    $pdf->listno = $list->listnumber;
     $title = offlinequiz_str_html_pdf($offlinequiz->name);
     // Add the list name to the title.
     $title .= ', '.offlinequiz_str_html_pdf($listname);

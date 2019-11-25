@@ -49,7 +49,7 @@ function offlinequiz_create_latex_question(question_usage_by_activity $templateu
     global $CFG, $DB, $OUTPUT;
 
     $letterstr = 'abcdefghijklmnopqrstuvwxyz';
-    $groupletter = strtoupper($letterstr[$group->number - 1]);
+    $groupletter = strtoupper($letterstr[$group->groupnumber - 1]);
 
     $coursecontext = context_course::instance($courseid);
     $course = $DB->get_record('course', array('id' => $courseid));
@@ -202,6 +202,101 @@ function offlinequiz_create_latex_question(question_usage_by_activity $templateu
     $file = $fs->create_file_from_string($fileinfo, $latex);
 
     return $file;
+}
+
+function offlinequiz_convert_html_to_latex_tagreplace($dom, $tag, $pre, $post) {
+    $elements = $dom->getElementsByTagName($tag);
+    foreach ($elements as $element) {
+        offlinequiz_convert_html_to_latex_single_tag_replace($dom, $pre, $post, $element);
+    }
+}
+
+function offlinequiz_convert_html_to_latex_paragraph($dom) {
+    $elements = $dom->getElementsByTagName('p');
+    foreach ($elements as $element) {
+        $style = $element->getAttribute("style");
+        if ( strpos($style, 'text-align: center') ) {
+            $pre = "\\begin{center}\n";
+            $post = "\\end{center}\n";
+        } else if ( strpos($style, 'text-align: left') ) {
+            $pre = "\\begin{flushleft}\n";
+            $post = "\\end{flushleft}\n";
+        } else if ( strpos($style, 'text-align: right') ) {
+            $pre = "\\begin{flushright}\n";
+            $post = "\\end{flushright}\n";
+        } else {
+            $pre = "";
+            $post = "\n\n";
+        }
+        offlinequiz_convert_html_to_latex_single_tag_replace($dom, $pre, $post, $element);
+    }
+}
+
+function offlinequiz_convert_html_to_latex_span($dom) {
+    $elements = $dom->getElementsByTagName('span');
+    foreach ($elements as $element) {
+        $style = $element->getAttribute("style");
+        if ( preg_match('/background-color:\s+rgb\((\d+),\s+(\d+),\s+(\d+)\)/', $style, $m) ) {
+            $pre = "\\colorbox[RGB]{{$m[1]},{$m[2]},{$m[3]}}{";
+            $post = "}";
+        } else if ( preg_match('/color:\s+rgb\((\d+),\s+(\d+),\s+(\d+)\)/', $style, $m) ) {
+            $pre = "\\textcolor[RGB]{{$m[1]},{$m[2]},{$m[3]}}{";
+            $post = "}";
+        } else {
+            $pre = "";
+            $post = "";
+        }
+        offlinequiz_convert_html_to_latex_single_tag_replace($dom, $pre, $post, $element);
+    }
+}
+
+function offlinequiz_convert_html_to_latex_tables($dom) {
+    $elements = $dom->getElementsByTagName('table');
+    foreach ($elements as $element) {
+        $pre = '\begin{tabular}';
+        $post = '\end{tabular}';
+        $caption = $element->getElementsByTagName('caption')->item(0);
+        if ( $caption and $caption->nodeValue !== '' ) {
+            $style = $caption->getAttribute("style");
+            if ( strpos($style, 'caption-side: bottom') !== false ) {
+                $post .= "\n" . "{\large " . $caption->nodeValue . "}\n\n";
+            } else {
+                $pre = "{\large " . $caption->nodeValue . "}\n\n" . $pre;
+            }
+            $element->removeChild($caption);
+        }
+        $rows = $element->getElementsByTagName('tr');
+        // TeX needs the number of columns.
+        $cmax = 0;
+        $r=0;
+        foreach ($rows as $row) {
+            $r++;
+            foreach (array("td", "th") as $item) {
+                $cols = $row->getElementsByTagName($item);
+                $c = 0;
+                foreach ($cols as $col) {
+                    $c++;
+                    if ($c > 1) {
+                        $col->nodeValue = "-amp- " . $col->nodeValue; // Add & between colums.
+                    }
+                }
+                $cmax = max($cmax, $c);
+            }
+            $r++;
+            if ($r > 1) {
+                $row->nodeValue = "\\\\\n" . $row->nodeValue; // Add \\ between colums.
+            }
+        }
+        $pre .= '{' . str_repeat ("c", $cmax) . '}';
+        offlinequiz_convert_html_to_latex_single_tag_replace($dom, $pre, $post, $element);
+    }
+}
+
+function offlinequiz_convert_html_to_latex_single_tag_replace($dom, $pre, $post, $element) {
+    $prenode = $dom->createTextNode($pre);
+    $postnode = $dom->createTextNode($post);
+    $element->parentNode->insertBefore($prenode, $element);
+    $element->appendChild($postnode);
 }
 
 /**

@@ -1334,10 +1334,197 @@ function xmldb_offlinequiz_upgrade($oldversion = 0) {
             upgrade_mod_savepoint(true, 2017020202, 'offlinequiz');
         }
     }
+<<<<<<< HEAD
     // TODO migrate old offlinequiz_q_instances maxmarks to new maxmark field in offlinequiz_group_questions.
     // TODO migrate  offlinequiz_group_questions to fill in page field correctly. For every group use the
     //      position field to find new pages and insert them.
     //      Adapt offlinequiz code to handle missing zeros as pagebreaks.
+=======
+    if ($oldversion < 2017042501) {
+        // Changing precision of field pagenumber on table offlinequiz_scanned_pages to (20).
+        $table = new xmldb_table('offlinequiz_scanned_pages');
+        $field = new xmldb_field('pagenumber', XMLDB_TYPE_INTEGER, '20', null, null, null, null, 'userkey');
+
+        // Launch change of precision for field pagenumber.
+        $dbman->change_field_precision($table, $field);
+
+        // Define field info to be added to offlinequiz_queue_data.
+        $table = new xmldb_table('offlinequiz_queue_data');
+        $field = new xmldb_field('info', XMLDB_TYPE_TEXT, null, null, null, null, null, 'error');
+
+        // Conditionally launch add field info.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Offlinequiz savepoint reached.
+        upgrade_mod_savepoint(true, 2017042501, 'offlinequiz');
+    }
+    if ($oldversion < 2017081102) {
+        $table = new xmldb_table('offlinequiz_page_corners');
+        $index = new xmldb_index('offlinequiz_page_corners_scannedpageid_idx', XMLDB_INDEX_NOTUNIQUE, array('scannedpageid'));
+        // Conditionally launch add index offlinequiz_userid_idx.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+        $table = new xmldb_table('offlinequiz_scanned_pages');
+        $index = new xmldb_index('offlinequiz_scanned_pages_resultid_idx', XMLDB_INDEX_NOTUNIQUE, array('resultid'));
+        // Conditionally launch add index offlinequiz_userid_idx.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+    }
+
+    if ($oldversion < 2018011601) {
+
+        // Define field id_digits to be added to offlinequiz, if not defined.
+        // This might miss due to an error in an old moodle-version.
+        $table = new xmldb_table('offlinequiz');
+        $field = new xmldb_field('id_digits', XMLDB_TYPE_INTEGER, '4', null, null, null, null, 'showtutorial');
+
+        // Conditionally launch add field id_digits.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+
+            $DB->set_field('offlinequiz', 'id_digits', get_config('offlinequiz', 'ID_digits'));
+        }
+
+        // Define field disableimgnewlines to be added to offlinequiz.
+        $table = new xmldb_table('offlinequiz');
+        $field = new xmldb_field('disableimgnewlines', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0', 'id_digits');
+
+        // Conditionally launch add field disableimgnewlines.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Offlinequiz savepoint reached.
+        upgrade_mod_savepoint(true, 2018011601, 'offlinequiz');
+    }
+    if($oldversion < 2018100300) {
+        $table = new xmldb_table('offlinequiz');
+        $field = new xmldb_field('algorithmversion', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'disableimgnewlines');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_mod_savepoint(true, 2018100300, 'offlinequiz');
+    }
+    
+    if($oldversion < 2018112700) {
+        // Define index offlinequiz_userid_idx (not unique) to be added to offlinequiz_results.
+        $table = new xmldb_table('offlinequiz_choices');
+        $index1 = new xmldb_index('offlinequiz_choices_slotnumber_idx', XMLDB_INDEX_NOTUNIQUE, array('slotnumber'));
+        $index2 = new xmldb_index('offlinequiz_choices_choicenumber_idx', XMLDB_INDEX_NOTUNIQUE, array('choicenumber'));
+
+        if (!$dbman->index_exists($table, $index1)) {
+            $dbman->add_index($table, $index1);
+        }
+        if (!$dbman->index_exists($table, $index2)) {
+            $dbman->add_index($table, $index2);
+        }
+        $sql = 'SELECT c1.id
+                FROM   {offlinequiz_choices} c1,
+                       {offlinequiz_choices} c2
+                WHERE  c1.scannedpageid = c2.scannedpageid
+                AND    c1.slotnumber = c2.slotnumber
+                AND    c1.choicenumber = c2.choicenumber
+                AND    c1.id < c2.id';
+        $idstodelete = $DB->get_fieldset_sql($sql);
+        if ($idstodelete) {
+	        $chunks = array_chunk($idstodelete, 250, true);
+	        $i=1;
+	        echo "Delete choices in ".count($chunks)." chunks of 250 entries...".PHP_EOL;
+	        foreach ($chunks as $curchunk) {
+	            echo "Delete chunk ".($i++)." of ".count($chunks)."!".PHP_EOL;
+	            list($querysql, $queryparams) = $DB->get_in_or_equal($curchunk);
+	            $DB->delete_records_select('offlinequiz_choices', 'id ' .  $querysql, $queryparams);
+	        }
+        }
+        
+        upgrade_mod_savepoint(true, 2018112700, 'offlinequiz');
+    }
+    if($oldversion < 2018121100) {
+        $table = new xmldb_table('offlinequiz');
+        $field = new xmldb_field('experimentalevaluation', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0', 'algorithmversion');
+    if (!$dbman->field_exists($table, $field)) {
+        $dbman->add_field($table, $field);
+    }
+        upgrade_mod_savepoint(true, 2018121100, 'offlinequiz');
+    }
+    
+    if ($oldversion < 2019050800) {
+    	
+    	// Rename field groupnumber on table offlinequiz_groups to NEWNAMEGOESHERE.
+    	$table = new xmldb_table('offlinequiz_groups');
+    	$field = new xmldb_field('number', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0', 'offlinequizid');
+    	
+    	// Launch rename field groupnumber.
+    	$dbman->rename_field($table, $field, 'groupnumber');
+    	
+    	// Offlinequiz savepoint reached.
+    	upgrade_mod_savepoint(true, 2019050800, 'offlinequiz');
+    }
+    if ($oldversion < 2019050801) {
+    	
+    	// Define field id to be added to offlinequiz_p_lists.
+    	$table = new xmldb_table('offlinequiz_p_lists');
+    	$field = new xmldb_field('number', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0', 'offlinequizid');
+    	
+    	// Launch rename field groupnumber.
+    	$dbman->rename_field($table, $field, 'listnumber');
+    	
+    	// Offlinequiz savepoint reached.
+    	upgrade_mod_savepoint(true, 2019050801, 'offlinequiz');
+    }
+    if($oldversion < 2019051401) {
+    	// Changing type of field info on table offlinequiz_scanned_pages to char.
+    	$table = new xmldb_table('offlinequiz_scanned_pages');
+    	$field = new xmldb_field('info', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'error');
+    	
+    	// Launch change of type for field info.
+    	$dbman->change_field_type($table, $field);
+    	
+    	// Changing type of field status on table offlinequiz_scanned_p_pagesto char.
+    	$table = new xmldb_table('offlinequiz_scanned_p_pages');
+    	$field = new xmldb_field('status', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'time');
+    	
+    	// Launch change of type for field info.
+    	$dbman->change_field_type($table, $field);
+    	
+    	// Changing type of field error on table offlinequiz_scanned_p_pagesto char.
+    	$table = new xmldb_table('offlinequiz_scanned_p_pages');
+    	$field = new xmldb_field('error', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'status');
+    	
+    	// Launch change of type for field info.
+    	$dbman->change_field_type($table, $field);
+    	
+    	
+    	
+    	// Changing type of field status on table offlinequiz_queue_data to char.
+    	$table = new xmldb_table('offlinequiz_queue_data');
+    	$field = new xmldb_field('status', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'filename');
+    	
+    	// Launch change of type for field info.
+    	$dbman->change_field_type($table, $field);
+    	
+    	// Changing type of field error on table offlinequiz_queue_data to char.
+    	$table = new xmldb_table('offlinequiz_queue_data');
+    	$field = new xmldb_field('error', XMLDB_TYPE_CHAR, '1333', null, null, null, null, 'status');
+    	
+    	// Launch change of type for field info.
+    	$dbman->change_field_type($table, $field);
+    	
+    	// Changing type of field info on table offlinequiz_queue_data to char.
+    	$table = new xmldb_table('offlinequiz_queue_data');
+    	$field = new xmldb_field('info', XMLDB_TYPE_CHAR, '1333', null, null, null, null, 'error');
+    	
+    	// Launch change of type for field info.
+    	$dbman->change_field_type($table, $field);
+    	
+    	upgrade_mod_savepoint(true, 2019051401, 'offlinequiz');
+    }
+    
+>>>>>>> source/MOODLE_37_STABLE
 
     return true;
 }

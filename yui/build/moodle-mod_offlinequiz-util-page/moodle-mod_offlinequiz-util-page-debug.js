@@ -248,7 +248,7 @@ Y.Moodle.mod_offlinequiz.util.page = {
             this.setId(page, currentpagenumber);
         }, this);
 
-        // Reorder action menus
+        // Reorder action menus.
         this.reorderActionMenus();
     },
 
@@ -273,10 +273,11 @@ Y.Moodle.mod_offlinequiz.util.page = {
             // Set menu id.
             this.setActionMenuId(actionmenu, id);
 
-            // Update action-menu-1-menubar
+            // Update action-menu-1-menubar.
             var menubar = actionmenu.one(this.SELECTORS.ACTIONMENUBAR);
             menubar.set('id', this.CONSTANTS.ACTIONMENUIDPREFIX + id + this.CONSTANTS.ACTIONMENUBARIDSUFFIX);
-            // Update action-menu-1-menu
+
+            // Update action-menu-1-menu.
             var menumenu = actionmenu.one(this.SELECTORS.ACTIONMENUMENU);
             menumenu.set('id', this.CONSTANTS.ACTIONMENUIDPREFIX + id + this.CONSTANTS.ACTIONMENUMENUIDSUFFIX);
         }, this);
