@@ -27,7 +27,7 @@
 var CSS = {
     RANDOMQUESTIONFORM: 'div.randomquestionformforpopup',
     PAGEHIDDENINPUT: 'input#rform_qpage',
-    RANDOMQUESTIONLINKS: '.menu [data-action="addarandomquestion"]'
+    RANDOMQUESTIONLINKS: 'ul.menu a.addarandomquestion'
 };
 
 var PARAMS = {

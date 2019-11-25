@@ -81,12 +81,11 @@ $string['closebeforeopen'] = 'Could not update the offline quiz. You have specif
 $string['closestudentview'] = 'Close Student View';
 $string['closewindow'] = 'Close Window';
 $string['cmmissing'] = 'The course module for the offline quiz with ID {$a} is missing';
-$string['configdisableimgnewlines'] = 'This option disables new lines before and after images in the pdf question sheets. Warning: This might lead to formatting problems.';
 $string['configintro'] = 'The values you set here are used as default values for the settings of new offline quizzes.';
 $string['configkeepfilesfordays'] = 'Determine how many days the uploaded image files are kept in temporary storage. During this time the image files are available in the offline quiz admin report.';
 $string['configonlylocalcategories'] = 'No shared question categories allowed.';
 $string['configshuffleanswers'] = 'Shuffle answers';
-$string['configshufflequestions'] = 'If you enable this option, then the order of questions in the offline quiz groups will be randomly shuffled each time you re-create the preview in the "Create forms" tab.';
+$string['configshufflequestions'] = 'If you enable this option, then the order of questions in the offline quiz groups will be randomly shuffled each time you re-create the preview in the "Create forms" tab.';;
 $string['configshufflewithin'] = 'If you enable this option, the answers of multiple choice questions are shuffled separately for each offline quiz group.';
 $string['configuseridentification'] = 'A formula describing the user identification. This formula is used to assign answer forms to users in the system. The right hand side of the equation must denote a field in the user table of Moodle.';
 $string['configpapergray'] = 'white-value of paper, which is used for the evaluation of answer-sheets';
@@ -110,8 +109,8 @@ $string['createpartpdferror'] = 'The PDF form for the list of participants {$a} 
 $string['createpdferror'] = 'The form for group {$a} could not be created. Maybe there are no questions in the group.';
 $string['createpdffirst'] = 'Create PDF list first';
 $string['createpdfforms'] = 'Create forms';
-$string['createpdf'] = 'Form';
-$string['createpdfs'] = 'Download forms';
+$string['createpdf'] = 'PDF form';
+$string['createpdfs'] = 'PDF forms';
 $string['createpdfsparticipants'] = 'PDF forms for list of participants';
 $string['createquestionandadd'] = 'Create a new question and add it to the quiz.';
 $string['createquiz'] = 'Create forms';
@@ -139,8 +138,6 @@ $string['difficultytitlea'] = 'Difficulty A';
 $string['difficultytitleb'] = 'Difficulty B';
 $string['difficultytitlediff'] = 'Difference';
 $string['difficultytitle'] = 'Difficulty';
-$string['disableimgnewlines'] = 'Disable new lines before and after images';
-$string['disableimgnewlines_help'] = 'This option disables new lines before and after images in the pdf question sheets. Warning: This might lead to formatting problems.';
 $string['displayoptions'] = 'Display options';
 $string['done'] = 'done';
 $string['downloadallzip'] = 'Download all files as ZIP';
@@ -279,7 +276,6 @@ $string['ischecked'] = 'Participation is checked';
 $string['isnotchecked'] = 'Participation is not checked';
 $string['itemdata'] = 'Itemdata';
 $string['keepfilesfordays'] = 'Keep files for days';
-$string['letter'] = 'Letter';
 $string['lightgray'] = 'Light grey';
 $string['linktoscannedform'] = 'View scanned form';
 $string['listnotdetected'] = 'Could not detect barcode for list!';
@@ -303,7 +299,7 @@ $string['missingquestion'] = 'This question no longer seems to exist';
 $string['missinguserid'] = 'Missing user identification number! Could not read barcode!';
 $string['modulename_help'] = 'This module allows the teacher to design offline quizzes consisting of multiple choice questions.
 These questions are kept in the Moodle question bank and can be re-used within courses and even between courses.
-The offline quizzes can be downloaded as PDF-, DOCX- or LaTeX-files. The students mark their answers on form sheets. The form sheets are scanned and the answers imported into the system.';
+The offline quizzes can be downloaded as PDF files. The students mark their answers on form sheets. The form sheets are scanned and the answers imported into the system.';
 $string['moveselectedonpage'] = 'Move selected questions to page: {$a}';
 $string['copyselectedtogroup'] = 'Add selected questions to group: {$a}';
 $string['copytogroup'] = 'Add all questions to group: {$a}';
@@ -402,7 +398,6 @@ $string['partcheckedwithresult'] = '{$a} checked participants with result';
 $string['partcheckedwithoutresult'] = '<a href="{$a->url}">{$a->count} checked participants without result</a>';
 $string['partuncheckedwithresult'] = '<a href="{$a->url}">{$a->count} unchecked participants with result</a>';
 $string['partuncheckedwithoutresult'] = '{$a} unchecked participants without result';
-$string['partial'] = 'partial';
 $string['participantslist'] = 'List of participants';
 $string['participantslists'] = 'Participants';
 $string['participants'] = 'Participants';
@@ -433,123 +428,6 @@ $string['preview'] = 'Preview';
 $string['previewquestion'] = 'Preview question';
 $string['printstudycodefield'] = 'Print study code field on question sheet';
 $string['printstudycodefield_help'] = 'If checked, the study code field will be printed on the first page of the question sheet.';
-$string['privacy:data_folder_name'] = 'Offlinequiz data';
-$string['privacy:metadata:core_files'] = 'The offlinequiz uses the file API to store the generated question and answer sheets and the filled out answer sheets.';
-$string['privacy:metadata:core_question'] = 'The offlinequiz uses the question API for saving the questions for the quizes.';
-$string['privacy:metadata:mod_quiz'] = 'The offlinequiz uses the quiz API for saving results of the quizes.';
-$string['privacy:metadata:offlinequiz:course'] = 'The \'course\' column in the offlinequiz table saves in which course this offlinequiz is stored in.';
-$string['privacy:metadata:offlinequiz:name'] = 'The \'name\' column saves the name of the offlinequiz.';
-$string['privacy:metadata:offlinequiz:introformat'] = '';
-$string['privacy:metadata:offlinequiz:pdfintro'] = 'The Introtext which is inserted into the question sheets in the beginning.';
-$string['privacy:metadata:offlinequiz:timeopen'] = 'The timeopen column saves when an offlinequiz was/will be opened.';
-$string['privacy:metadata:offlinequiz:timeclose'] = 'The timeclose column saves when the offlinequiz was/will be closed.';
-$string['privacy:metadata:offlinequiz:time'] = '';
-$string['privacy:metadata:offlinequiz:grade'] = 'The grade shows the maximum amount of points to get in this test';
-$string['privacy:metadata:offlinequiz:numgroups'] = 'The amount of distinct groups this offlinequiz has.';
-$string['privacy:metadata:offlinequiz:decimalpoints'] = 'The amount of decimal points to calculate for the grades.';
-$string['privacy:metadata:offlinequiz:review'] = '';
-$string['privacy:metadata:offlinequiz:docscreated'] = 'If the documents were created this field is set to 1 otherwise its 0.';
-$string['privacy:metadata:offlinequiz:shufflequestions'] = 'A preference if the questions should be shuffled when creating a test. 1 for shuffling, 0 otherwise.';
-$string['privacy:metadata:offlinequiz:printstudycodefield'] = 'A preference if the study code should be printed on the question fields. 1 for true, 0 otherwise.';
-$string['privacy:metadata:offlinequiz:fontsize'] = 'The size of the font in the questionsheets.';
-$string['privacy:metadata:offlinequiz:timecreated'] = 'The time when the offlinequiz was created';
-$string['privacy:metadata:offlinequiz:timemodified'] = 'The time column saves the time when the offlinequiz was changed the last time.';
-$string['privacy:metadata:offlinequiz:fileformat'] = 'The fileformat which is used to print the question sheets, 0 for pdf, 1 for docx, 2 for LaTeX';
-$string['privacy:metadata:offlinequiz:showquestioninfo'] = 'Saves if an information about the questions should be displayed, 0 for no, 1 for info about question type, 2 for question about the amount of right answers.';
-$string['privacy:metadata:offlinequiz:showgrades'] = 'Saves if the amount of points to get for the question should be printed on the question sheet.';
-$string['privacy:metadata:offlinequiz:showtutorial'] = 'Saves if students should be asked to do an offlinequiz tutorial.';
-$string['privacy:metadata:offlinequiz:id_digits'] = 'Saves the amount of digits the idnumber had when the answer sheets were created. this is needed for backward compability if the amount is raised between creation and import of the answer sheets.';
-$string['privacy:metadata:offlinequiz:disableimgnewlines'] = 'Should disable new lines before and after images ';
-$string['privacy:metadata:offlinequiz'] = 'The offlinequiz table saves every information specific to an offlinequiz instance';
-$string['privacy:metadata:offlinequiz_choices:scannedpageid'] = 'the scannedpage the choice relates to';
-$string['privacy:metadata:offlinequiz_choices:slotnumber'] = 'The question slot of this choice';
-$string['privacy:metadata:offlinequiz_choices:choicenumber'] = 'The number of the choice for this question.';
-$string['privacy:metadata:offlinequiz_choices:value'] = 'Is the choice considered to be crossed out. 0 for no, 1 for yes, -1 for uncertain';
-$string['privacy:metadata:offlinequiz_choices'] = 'This table holds the information of all the crosses for all the scanned pages. The information is needed to later create results based on the crosses.';
-$string['privacy:metadata:offlinequiz_group_questions:offlinequizid'] = 'The offlinequizid this group question relates to';
-$string['privacy:metadata:offlinequiz_group_questions:offlinegroupid'] = 'The offlinequiz group this group question relates to';
-$string['privacy:metadata:offlinequiz_group_questions:questionid'] = 'The id of the selected question';
-$string['privacy:metadata:offlinequiz_group_questions:position'] = 'The position in this offlinequiz';
-$string['privacy:metadata:offlinequiz_group_questions:page'] = 'The page on which this question is printed in the answer sheets';
-$string['privacy:metadata:offlinequiz_group_questions:slot'] = 'The slot of the question in the quiz';
-$string['privacy:metadata:offlinequiz_group_questions:maxmark'] = 'The maximum amount of points being able to achieve for this question';
-$string['privacy:metadata:offlinequiz_group_questions'] = 'This Table saves all the questions for every offlinequiz groups.';
-$string['privacy:metadata:offlinequiz_groups:offlinequizid'] = 'The id of the offlinequiz this offlinequiz belongs to.';
-$string['privacy:metadata:offlinequiz_groups:number'] = 'the number of of the group for this offlinequiz, 1 for group A, 2 group B, and so on';
-$string['privacy:metadata:offlinequiz_groups:sumgrades'] = 'the sum of all grades for all questions in this group';
-$string['privacy:metadata:offlinequiz_groups:numberofpages'] = 'the amount of pages it needs to print the answer sheets on';
-$string['privacy:metadata:offlinequiz_groups:templateusageid'] = 'The id of the templateusage, which is used to create a result in the quiz API';
-$string['privacy:metadata:offlinequiz_groups:questionfilename'] = 'The filename which was used to save the questionfile';
-$string['privacy:metadata:offlinequiz_groups:answerfilename'] = 'The filename which was used to save the answerfile';
-$string['privacy:metadata:offlinequiz_groups:correctionfilename'] = 'The file which was used to save the correction file';
-$string['privacy:metadata:offlinequiz_groups'] = 'Table for the groups in which the tests take part.';
-$string['privacy:metadata:offlinequiz_hotspots:scannedpageid'] = 'Scanned page on which the hotspot is.';
-$string['privacy:metadata:offlinequiz_hotspots:name'] = 'Type of the hotspot, e.g. u%number for user hotspot, a-0-0 for question 1 answer 1, and so on';
-$string['privacy:metadata:offlinequiz_hotspots:x'] = 'The x value of the hotspot';
-$string['privacy:metadata:offlinequiz_hotspots:y'] = 'the y value of the hotspot';
-$string['privacy:metadata:offlinequiz_hotspots:blank'] = 'If the hotspot is analyzed successfully';
-$string['privacy:metadata:offlinequiz_hotspots:time'] = 'the last update time for this hotspot';
-$string['privacy:metadata:offlinequiz_hotspots'] = 'This table saves all the positions of the boxes and if they are evaluated successfully.';
-$string['privacy:metadata:offlinequiz:papergray'] = 'The grayscale of this offlinequiz';
-$string['privacy:metadata:offlinequiz_page_corners:scannedpageid'] = 'The scannedpage this corner is on';
-$string['privacy:metadata:offlinequiz_page_corners:x'] = 'The x value of the corner';
-$string['privacy:metadata:offlinequiz_page_corners:y'] = 'The y value of the corner';
-$string['privacy:metadata:offlinequiz_page_corners:position'] = 'The information wether this corner is at the top or bottom and right or left.';
-$string['privacy:metadata:offlinequiz_page_corners'] = 'This table saves all the corners for every scanned page to evaluate it faster for the next evaluation or correction';
-$string['privacy:metadata:offlinequiz_participants:listid'] = 'The id of the list this participant is on';
-$string['privacy:metadata:offlinequiz_participants:userid'] = 'The userid of the user';
-$string['privacy:metadata:offlinequiz_participants:checked'] = 'The information if this user was checked on the participants list';
-$string['privacy:metadata:offlinequiz_participants'] = 'the participants table saves if the user was taking part in the test or not.';
-$string['privacy:metadata:offlinequiz_p_choices:scannedpageid'] = 'the scannedpage this choice relates to';
-$string['privacy:metadata:offlinequiz_p_choices:userid'] = 'The userid this choice takes care of';
-$string['privacy:metadata:offlinequiz_p_choices:value'] = 'If the cross is filled or not (0 for not filled, 1 for filled, -1 for insecure)';
-$string['privacy:metadata:offlinequiz_p_choices'] = 'This table saves all the crosses for the participants lists';
-$string['privacy:metadata:offlinequiz_p_lists:offlinequizid'] = 'the offlinequiz this list belongs to';
-$string['privacy:metadata:offlinequiz_p_lists:name'] = 'the name of the participants list';
-$string['privacy:metadata:offlinequiz_p_lists:number'] = 'the number of the list in the offlinequiz';
-$string['privacy:metadata:offlinequiz_p_lists:filename'] = 'the name of the file for the list';
-$string['privacy:metadata:offlinequiz_p_lists'] = 'this table saves information about participants lists where the teachers can cross out, if a student was there or not';
-$string['privacy:metadata:offlinequiz_queue'] = 'This table saves a queue of an upload. For every upload there is an own object in this table';
-$string['privacy:metadata:offlinequiz_queue:offlinequizid'] = 'The offlinequiz id of the queue';
-$string['privacy:metadata:offlinequiz_queue:importuserid'] = 'The userid of the teacher who imported the files';
-$string['privacy:metadata:offlinequiz_queue:timecreated'] = 'The time this offlinequiz sheets were imported';
-$string['privacy:metadata:offlinequiz_queue:timestart'] = 'The time the evaluation of the queue was started';
-$string['privacy:metadata:offlinequiz_queue:timefinish'] = 'The time the evaluation of the queue was finished';
-$string['privacy:metadata:offlinequiz_queue:status'] = 'the status of the queue which is needed ';
-$string['privacy:metadata:offlinequiz_queue_data:queueid'] = 'the queue this data belongs to';
-$string['privacy:metadata:offlinequiz_queue_data:filename'] = 'the filename of the file which this queue data object ';
-$string['privacy:metadata:offlinequiz_queue_data:status'] = 'The status of the queue data';
-$string['privacy:metadata:offlinequiz_queue_data:error'] = 'If the status is error, here will stand a more detailed error message';
-$string['privacy:metadata:offlinequiz_queue_data'] = 'This table saves data for the queue as every file in the queue will get a queue data object.';
-$string['privacy:metadata:offlinequiz_results:offlinequizid'] = 'The offlinequiz, which this result belongs to.';
-$string['privacy:metadata:offlinequiz_results:offlinegroupid'] = 'The offlinequiz group which this result belongs to.';
-$string['privacy:metadata:offlinequiz_results:userid'] = 'The user which this result belongs to';
-$string['privacy:metadata:offlinequiz_results:sumgrades'] = 'The sum of all grades for this result';
-$string['privacy:metadata:offlinequiz_results:usageid'] = 'The templateusageid of the quiz API where this result is saved';
-$string['privacy:metadata:offlinequiz_results:teacherid'] = 'The teacher who uploaded the result';
-$string['privacy:metadata:offlinequiz_results:status'] = 'The status of the result (incomplete or complete)';
-$string['privacy:metadata:offlinequiz_results:timestart'] = 'The beginning of the time the result was inserted the first time';
-$string['privacy:metadata:offlinequiz_results:timefinish'] = 'The end time the result was inserted fort the first time';
-$string['privacy:metadata:offlinequiz_results:timemodified'] = ' The modify date for the result';
-$string['privacy:metadata:offlinequiz_results'] = 'This table saves all the result data, which is not storable in the quiz API';
-$string['privacy:metadata:offlinequiz_scanned_pages:offlinequizid'] = 'the offlinequiz of the scanned page';
-$string['privacy:metadata:offlinequiz_scanned_pages:resultid'] = 'The result relating to this page';
-$string['privacy:metadata:offlinequiz_scanned_pages:filename'] = 'The filename of the scanned page';
-$string['privacy:metadata:offlinequiz_scanned_pages:warningfilename'] = 'The filename of the file which is created when a wrongly filled in test is corrected and the user gets a warning about that';
-$string['privacy:metadata:offlinequiz_scanned_pages:groupnumber'] = 'The groupnumber of the group this offlinequiz belongs to';
-$string['privacy:metadata:offlinequiz_scanned_pages:userkey'] = 'the userkey (not userid) of the crossed out user on the page';
-$string['privacy:metadata:offlinequiz_scanned_pages:pagenumber'] = 'The pagenumber of this page';
-$string['privacy:metadata:offlinequiz_scanned_pages:time'] = 'The time the page was processed';
-$string['privacy:metadata:offlinequiz_scanned_pages:status'] = 'the status of this page';
-$string['privacy:metadata:offlinequiz_scanned_pages:error'] = 'The detailed error this page has (if it exists).';
-$string['privacy:metadata:offlinequiz_scanned_pages'] = 'The table saves information about a scanned page of an offline test';
-$string['privacy:metadata:offlinequiz_scanned_p_pages:offlinequizid'] = 'The offlinequiz this participants page belongs to';
-$string['privacy:metadata:offlinequiz_scanned_p_pages:listnumber'] = 'The number of the list';
-$string['privacy:metadata:offlinequiz_scanned_p_pages:filename'] = 'The name of the file for the scanned page';
-$string['privacy:metadata:offlinequiz_scanned_p_pages:time'] = 'The time this page was processed';
-$string['privacy:metadata:offlinequiz_scanned_p_pages:status'] = 'the status of this scanned page';
-$string['privacy:metadata:offlinequiz_scanned_p_pages:error'] = 'the error (if exists) that this page triggered while processing';
-$string['privacy:metadata:offlinequiz_scanned_p_pages'] = 'This table saves participant pages and their general information';
 $string['questionanalysis'] = 'Difficulty analysis';
 $string['questionanalysistitle'] = 'Difficulty Analysis Table';
 $string['questionbankcontents'] = 'Question bank contents';
@@ -561,10 +439,7 @@ $string['questioninfonone'] = 'Nothing';
 $string['questioninfoqtype'] = 'Question type';
 $string['questionname'] = 'Question name';
 $string['questionsheet'] = 'Question sheet';
-$string['questionsheetlatextemplate'] = '% !TEX encoding = UTF-8 Unicode
-\documentclass[11pt,a4paper]{article}
-\usepackage[utf8x]{inputenc}
-\usepackage[T1]{fontenc}
+$string['questionsheetlatextemplate'] = '\documentclass[12pt,a4paper]{article}
 \textwidth 16truecm
 \textheight 23truecm
 \setlength{\oddsidemargin}{0cm}
@@ -572,18 +447,21 @@ $string['questionsheetlatextemplate'] = '% !TEX encoding = UTF-8 Unicode
 \setlength{\topmargin}{-1cm}
 \usepackage{amsmath} % for \implies etc
 \usepackage{amsfonts} % for \mathbb etc
-\usepackage[colorlinks=true,urlcolor=dunkelrot,linkcolor=black]{hyperref} % For using hyperlinks
-\usepackage{ifthen}
-\usepackage{enumitem}
-\usepackage{xcolor}
-\usepackage{ulem}
+\usepackage{graphicx} % for including pictures
+\renewcommand{\familydefault}{\sfdefault} % Font
+\newcommand{\lsim}{\mbox{\raisebox{-.3em}{$\stackrel{<}{\sim}$}}} % less or approximately equal
+\newcommand{\subs}{\mbox{\raisebox{-.5em}{$\stackrel{\subset}{\neq}$}}}
+\newcommand{\sei}{\mbox{\raisebox{.0em}{$\stackrel{!}{=}$}}}
 \parindent 0pt % no indent on the beginning of a section
+\usepackage{esvect} % long vector arrows, e.g. \vv{AB}
+\usepackage[colorlinks=true,urlcolor=dunkelrot,linkcolor=black]{hyperref} % For using of Hyperlinks
 \renewcommand\UrlFont{\sf}
-\usepackage{lastpage}
-\usepackage{fancyhdr}
-\pagestyle{fancy}
-\chead{\sc \Title, Group \Group}
-\cfoot{Seite \thepage/\pageref{LastPage}}
+\usepackage{ulem} %  \sout{horizontal cross out} \xout{diagonal strike out}
+\newcommand{\abs}[1]{\left\lvert#1\right\rvert}
+\usepackage{scrpage2} % For Header and Footer
+\pagestyle{scrheadings}
+\clearscrheadfoot
+\ifoot{[Gruppe \Group]}
 \makeatletter %%% disable pagebreaks between answers
 \@beginparpenalty=10000
 \@itempenalty=10000
@@ -593,48 +471,24 @@ $string['questionsheetlatextemplate'] = '% !TEX encoding = UTF-8 Unicode
 % \newcommand{\answerIs}[1]{[#1]} %%%Enable showing the right answer
 %%%
 
-
-% ===========================================================================================================
-%%% Course data:
-\newcommand{\Group}{{$a->groupname}}
-\newcommand{\Title}{{$a->coursename}}
-\newcommand{\Date}
-
-\newcommand{\TestTitle}{%
-\begin{center}
-{\bf \Large Questionnaire}\\\\[3mm]
-\fbox{
-\begin{tabular}{rl}
-\rule{0pt}{25pt} Name: & $\underline{\hspace*{8cm}}$ \rule{20pt}{0pt}\\\\[5mm]
-Student ID: & $\underline{\hspace*{8cm}}$\\\\[5mm]
-\ifthenelse{\equal{true}{{$a->printstudycodefield}}}{\rule{10pt}{0pt} Program code: & $\underline{\hspace*{8cm}}$\\\\[5mm]}{}
-\rule[-20pt]{0pt}{20pt} Signature: & $\underline{\hspace*{8cm}}$
-\end{tabular}}
-\end{center}
-}
-
-\InputIfFileExists{offline_test_extras.tex}{}{} % Input extra user definitions
-
 \begin{document}
 
 
-% ===========================================================================================================
-\TestTitle
 
 % ===========================================================================================================
+%%% Data of the Course
+\begin{center}{\LARGE {$a->coursename}}\end{center}
+\begin{center}{Written Exam {$a->date}}\end{center}
+%%%
+\def\Group{{$a->groupname}}
+\begin{center}{\Large Group \Group}\end{center}
 
+{\bf Name:}\\\\
+{\bf Matriculation number:}\\\\
+{\bf Signature:}\\
 
+% ===========================================================================================================
 \bigskip
-% ===========================================================================================================
-
-{$a->pdfintrotext}
-
-% ===========================================================================================================
-
-\newpage
-
-% ===========================================================================================================
-
 
 {$a->latexforquestions}
 
@@ -674,9 +528,8 @@ $string['reordertool'] = 'Show the reordering tool';
 $string['repaginate'] = 'Repaginate with {$a} questions per page';
 $string['repaginatecommand'] = 'Repaginate';
 $string['repaginatenow'] = 'Repaginate now';
-$string['reportends'] = 'Review of results ends';
 $string['reportoverview'] = 'Overview';
-$string['reportstarts'] = 'Review of results starts';
+$string['reportstarts'] = 'review of results';
 $string['resetofflinequizzes'] = 'Reset Offline Quiz data';
 $string['results'] = 'Results';
 $string['resultexists'] = 'Same result for {$a} already exists, import ignored';
@@ -729,7 +582,6 @@ $string['scanneroptions'] = 'Scanner settings';
 $string['scannerpdfs'] = 'Empty forms';
 $string['scannerpdfstext'] = 'Download the following empty forms if you want to use your own scanner software.';
 $string['score'] = 'Score';
-$string['search:activity'] = 'Offline quiz - activity information';
 $string['select'] = 'Select';
 $string['selectagroup'] = 'Select a group';
 $string['selectall'] = 'Select all';
@@ -741,7 +593,6 @@ $string['selectdifferentgroup'] = 'Please select a different group!';
 $string['selectformat'] = 'Select format...';
 $string['selectgroup'] = 'Select group';
 $string['selectlist'] = 'Please select a list or try to readjust sheet:';
-$string['selectmultipletoolbar'] = 'Select multiple toolbar';
 $string['selectpage'] = 'Please select page number or try to readjust sheet:';
 $string['showallparts'] = 'Show all {$a} participants';
 $string['showcopyright'] = 'Show copyright statement';

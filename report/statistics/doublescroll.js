@@ -15,7 +15,7 @@
 
 /**
  * JavaScript library for the offlinequiz module editing interface.
- *
+ * 
  * @package       mod
  * @subpackage    offlinequiz
  * @author        Juergen Zimmer <zimmerj7@univie.ac.at>
@@ -29,16 +29,19 @@ var offlinequiz_statistics = {};
 
 function offlinequiz_statistics_init_doublescroll(Y) {
     jQuery(document).ready(function($) {
-        $('#tablecontainer > div.no-overflow').doubleScroll();
-    });
+		$('#tablecontainer > div.no-overflow').doubleScroll();
+	});
 
-    $(window).resize(function() {
-        width = $('#tablecontainer > div.no-overflow').width();
-        $('div.suwala-doubleScroll-scroll-wrapper').width(width);
-    });
+	$(window).resize(function() {
+		width = $('#tablecontainer > div.no-overflow').width();
+		$('div.suwala-doubleScroll-scroll-wrapper').width(width);
+	});
+
+//	fxheaderInit('questionstatistics', 380, 1, 0);
+//	fxheader();
 }
 
 function offlinequiz_statistics_init_fxheader(Y) {
-    fxheaderInit('questionstatistics', 320, 1, 0);
-    fxheader();
+	fxheaderInit('questionstatistics', 320, 1, 0);
+	fxheader();
 }

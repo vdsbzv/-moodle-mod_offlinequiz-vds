@@ -215,6 +215,7 @@ onClick=\"self.close(); return false;\"><br />";
 
     $groupnumber = required_param('groupnumber', PARAM_TEXT);
     $groupnumber = intval($groupnumber);
+    // Old code  if (!property_exists($scannedpage, 'groupnumber') || $scannedpage->groupnumber == 0) {.
     $scanner->set_group($groupnumber);
     $scannedpage->groupnumber = $groupnumber;
 
@@ -239,6 +240,8 @@ onClick=\"self.close(); return false;\"><br />";
     }
 
     // Now we check the scanned page with potentially updated information.
+    // Removed $scannedpage = offlinequiz_check_for_changed_groupnumber($offlinequiz, $scanner, $scannedpage,
+    //   $coursecontext, $questionsperpage, $offlinequizconfig);.
 
     $oldresultid = $scannedpage->resultid;
     $scannedpage = offlinequiz_check_for_changed_user($offlinequiz, $scanner, $scannedpage, $coursecontext,
@@ -718,6 +721,7 @@ if ($group && $user && $result = $DB->get_record('offlinequiz_results', array('i
                     'filename'  => $scanner->filename . '_warning');
 
             // Create a unique temp dir.
+            srand(microtime() * 1000000);
             $unique = str_replace('.', '', microtime(true) . rand(0, 100000));
             $dirname = "{$CFG->tempdir}/offlinequiz/import/$unique";
             check_dir_exists($dirname, true, true);
@@ -1184,7 +1188,7 @@ if ($sheetloaded) {
             }
             $questioncounter++;
         } // End if.
-    }
+    } // End if (!empty($group .
 }
 ?>
 

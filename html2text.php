@@ -47,13 +47,11 @@ class offlinequiz_html_translator
      * @param int $maxwidth The maximum width in pixels for images.
      * @return string The result string
      */
-    public function fix_image_paths($input, $contextid, $filearea, $itemid, $kfactor,
-            $maxwidth, $disableimgnewlines, $format = 'pdf') {
+    public function fix_image_paths($input, $contextid, $filearea, $itemid, $kfactor, $maxwidth, $format = 'pdf') {
         global $CFG, $DB;
 
         require_once($CFG->dirroot.'/filter/tex/lib.php');
         require_once($CFG->dirroot.'/filter/tex/latex.php');
-        $file = null;
         $fs = get_file_storage();
 
         $output = $input;
@@ -61,6 +59,7 @@ class offlinequiz_html_translator
         $output = array_shift($strings);
         foreach ($strings as $string) {
             // Define a unique temporary name for each image file.
+            srand(microtime() * 1000000);
             $unique = str_replace('.', '', microtime(true) . '_' . rand(0, 100000));
 
             $imagetag = substr($string, 0, strpos($string, '>'));
@@ -226,7 +225,7 @@ class offlinequiz_html_translator
                         $this->tempfiles[] = $file;
 
                         // In answer texts we want a line break to avoid the picture going above the line.
-                        if ($filearea == 'answer' and $disableimgnewlines == 0) {
+                        if ($filearea == 'answer') {
                             $output .= '<br/>';
                         }
 

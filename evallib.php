@@ -152,6 +152,11 @@ function offlinequiz_check_scanned_page($offlinequiz, offlinequiz_page_scanner $
         }
         $page = $scannedpage->pagenumber;
 
+        // Prevent SMALLINT overflow on missread barcode
+        if ($scannedpage->pagenumber > 32760) {
+            $scannedpage->pagenumber = null;
+        }
+
         if ($scannedpage->status == 'ok' || $scannedpage->status == 'suspended') {
             if ($page < 1 || $page > $group->numberofpages) {
                 $scannedpage->status = 'error';
@@ -242,7 +247,7 @@ function offlinequiz_check_scanned_page($offlinequiz, offlinequiz_page_scanner $
                 $qinstances = $DB->get_records_sql($sql,
                         array('offlinequizid' => $offlinequiz->id,
                               'offlinegroupid' => $group->id));
-
+ 
                 // Clone it...
                 $quba = $templateusage->get_clone($qinstances);
 
@@ -462,7 +467,7 @@ function offlinequiz_submit_scanned_page($offlinequiz, $scannedpage, $choicesdat
             $quba->finish_question($slot, time());
         }
 
-    } // End for slotindex.
+    } // End for ($slotindex...
 
     question_engine::save_questions_usage_by_activity($quba);
 
@@ -765,7 +770,7 @@ function offlinequiz_get_question_numbers($offlinequiz, $groups) {
 
 // O=======================================================================.
 // O=======================================================================.
-// Functions for lists of participants.
+//  Functions for lists of participants.
 // O=======================================================================.
 // O=======================================================================.
 /**

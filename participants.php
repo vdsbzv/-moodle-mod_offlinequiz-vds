@@ -91,7 +91,6 @@ $thispageurl = new moodle_url('/mod/offlinequiz/participants.php',
 $PAGE->set_url($thispageurl);
 $PAGE->set_pagelayout('admin');
 $node = $PAGE->settingsnav->find('mod_offlinequiz_participants', navigation_node::TYPE_SETTING);
-$PAGE->force_settings_menu(true);
 if ($node) {
     $node->make_active();
 }
@@ -99,14 +98,6 @@ if ($node) {
 $pagetitle = get_string('editparticipants', 'offlinequiz');
 $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
-$PAGE->requires->yui_module('moodle-mod_offlinequiz-toolboxes',
-        'M.mod_offlinequiz.init_resource_toolbox',
-        array(array(
-                'courseid' => $course->id,
-                'offlinequizid' => $offlinequiz->id
-        ))
-        );
-
 
 offlinequiz_load_useridentification();
 $offlinequizconfig = get_config('offlinequiz');
@@ -192,25 +183,26 @@ switch($mode) {
             echo '<li>';
             $listname = '<b>' . $list->name . '(' . $numusers . ')</b>';
             $listurl = new moodle_url($CFG->wwwroot . '/mod/offlinequiz/participants.php',
-                    array('mode' => 'editparticipants', 'q' => $offlinequiz->id , 'listid' => $list->id));
+                    array('mode' => 'editparticipants', 'q' => $offlinequiz->id ,'listid' => $list->id));
             echo html_writer::link($listurl, $listname);
             $streditlist = get_string('editthislist', 'offlinequiz');
-            $imagehtml = $OUTPUT->pix_icon('i/edit',  $streditlist);
+            $imagehtml = html_writer::img($OUTPUT->pix_url('i/edit'),  $streditlist);
             $editurl = new moodle_url($CFG->wwwroot . '/mod/offlinequiz/participants.php',
-                    array('mode' => 'editlists', 'action' => 'edit' , 'q' => $offlinequiz->id , 'listid' => $list->id));
+                    array('mode' => 'editlists', 'action' => 'edit' , 'q' => $offlinequiz->id ,'listid' => $list->id));
             echo html_writer::link($editurl, $imagehtml, array('class' => 'editlistlink'));
 
             $strdeletelist = get_string('deletethislist', 'offlinequiz');
-            $imagehtml = $OUTPUT->pix_icon('t/delete',  $strdeletelist);
+            $imagehtml = html_writer::img($OUTPUT->pix_url('t/delete'),  $strdeletelist);
             $deleteurl = new moodle_url($CFG->wwwroot . '/mod/offlinequiz/participants.php',
                     array('mode' => 'editlists',
                           'action' => 'delete',
                           'q' => $offlinequiz->id,
                           'listid' => $list->id,
                           'sesskey' => sesskey()));
-            echo html_writer::link($deleteurl, $imagehtml,
-                         array('onClick' => 'return confirm(\'' . addslashes(get_string('deletelistcheck', 'offlinequiz'))
-                         . '\');', 'class' => 'deletelistlink'));
+            echo html_writer::link($deleteurl, $imagehtml,array('onClick' =>
+                            'return confirm(\'' . addslashes(get_string('deletelistcheck', 'offlinequiz')) . '\');',
+                            'class' => 'deletelistlink'
+            ));
             echo '</li>';
         }
         echo '</ul>';
@@ -463,19 +455,16 @@ switch($mode) {
         ?>
 
         <div class="singlebutton" align="center">
-            <form action="<?php echo "$CFG->wwwroot/mod/offlinequiz/participants.php" ?>" method="post">
-                <div>
-                    <input type="hidden" name="q" value="<?php echo $offlinequiz->id ?>" />
-                    <input type="hidden" name="forcenew" value="1" />
-                    <input type="hidden" name="mode" value="createpdfs" />
-                    <button type="submit"
-                    onClick='return confirm("<?php echo get_string('reallydeleteupdatepdf', 'offlinequiz') ?>")' 
-                    class="btn btn-secondary">
-            <?php echo get_string('deleteupdatepdf', 'offlinequiz') ?>
-                    </button>
+	        <form action="<?php echo "$CFG->wwwroot/mod/offlinequiz/participants.php" ?>" method="post">
+		        <div>
+			        <input type="hidden" name="q" value="<?php echo $offlinequiz->id ?>" />
+			        <input type="hidden" name="forcenew" value="1" />
+			        <input type="hidden" name="mode" value="createpdfs" />
+			        <input type="submit" value="<?php echo get_string('deleteupdatepdf', 'offlinequiz') ?>"
+				    onClick='return confirm("<?php echo get_string('reallydeleteupdatepdf', 'offlinequiz') ?>")' />
                 </div>
-            </form>
-            <br>&nbsp;<br>
+	        </form>
+	        <br>&nbsp;<br>
         </div>
         <?php
 
@@ -580,6 +569,7 @@ switch($mode) {
                 // or one from the filesarea.
                 $realfilename = $importform->get_new_filename('newfile');
                 // Create a unique temp dir.
+                srand(microtime() * 1000000);
                 $unique = str_replace('.', '', microtime(true) . rand(0, 100000));
                 $tempdir = "{$CFG->tempdir}/offlinequiz/import/$unique";
                 check_dir_exists($tempdir, true, true);
@@ -636,17 +626,19 @@ switch($mode) {
                 $scanner = new offlinequiz_participants_scanner($offlinequiz, $context->id, 0, 0);
                 if ($scannedpage = $scanner->load_image($filename)) {
                     if ($scannedpage->status == 'ok') {
-                        list($scanner, $scannedpage) = offlinequiz_check_scanned_participants_page(
-                                                       $offlinequiz, $scanner, $scannedpage, $USER->id, $coursecontext, true);
+                        list($scanner, $scannedpage) =
+                            offlinequiz_check_scanned_participants_page($offlinequiz, $scanner, $scannedpage,
+                                                                        $USER->id, $coursecontext, true);
                     }
                     if ($scannedpage->status == 'ok') {
-                        $scannedpage = offlinequiz_process_scanned_participants_page($offlinequiz, $scanner, $scannedpage,
+                        $scannedpage =
+                            offlinequiz_process_scanned_participants_page($offlinequiz, $scanner, $scannedpage,
                                                                           $USER->id, $coursecontext);
                     }
                     if ($scannedpage->status == 'ok') {
                         $choicesdata = $DB->get_records('offlinequiz_p_choices', array('scannedppageid' => $scannedpage->id));
-                        $scannedpage = $scannedpage = offlinequiz_submit_scanned_participants_page(
-                                                      $offlinequiz, $scannedpage, $choicesdata);
+                        $scannedpage = $scannedpage =
+                            offlinequiz_submit_scanned_participants_page($offlinequiz, $scannedpage, $choicesdata);
                         if ($scannedpage->status == 'submitted') {
                             echo get_string('pagenumberimported', 'offlinequiz', $j)."<br /><br />";
                         }

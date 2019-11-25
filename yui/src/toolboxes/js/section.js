@@ -24,17 +24,6 @@ var SECTIONTOOLBOX = function() {
 
 Y.extend(SECTIONTOOLBOX, TOOLBOX, {
     /**
-     * An Array of events added when editing a max mark field.
-     * These should all be detached when editing is complete.
-     *
-     * @property editsectionevents
-     * @protected
-     * @type Array
-     * @protected
-     */
-    editsectionevents: [],
-
-    /**
      * Initialize the section toolboxes module.
      *
      * Updates all span.commands with relevant handlers and other required changes.
@@ -45,9 +34,11 @@ Y.extend(SECTIONTOOLBOX, TOOLBOX, {
     initializer : function() {
         M.mod_offlinequiz.offlinequizbase.register_module(this);
 
-        BODY.delegate('key', this.handle_data_action, 'down:enter', SELECTOR.ACTIVITYACTION, this);
-        Y.delegate('click', this.handle_data_action, BODY, SELECTOR.ACTIVITYACTION, this);
-        Y.delegate('change', this.handle_data_action, BODY, SELECTOR.EDITSHUFFLEQUESTIONSACTION, this);
+        // Section Highlighting.
+        Y.delegate('click', this.toggle_highlight, SELECTOR.PAGECONTENT, SELECTOR.SECTIONLI + ' ' + SELECTOR.HIGHLIGHT, this);
+
+        // Section Visibility.
+        Y.delegate('click', this.toggle_hide_section, SELECTOR.PAGECONTENT, SELECTOR.SECTIONLI + ' ' + SELECTOR.SHOWHIDE, this);
     },
 
     toggle_hide_section : function(e) {
@@ -59,7 +50,7 @@ Y.extend(SECTIONTOOLBOX, TOOLBOX, {
             button = e.target.ancestor('a', true),
             hideicon = button.one('img'),
 
-        // The value to submit.
+        // The value to submit
             value,
 
         // The text for strings and images. Also determines the icon to display.
@@ -85,13 +76,14 @@ Y.extend(SECTIONTOOLBOX, TOOLBOX, {
         });
         button.set('title', newstring);
 
-        // Change the highlight status.
+        // Change the highlight status
         var data = {
             'class' : 'section',
             'field' : 'visible',
             'id'    : Y.Moodle.core_course.util.section.getId(section.ancestor(M.mod_offlinequiz.edit.get_section_wrapper(Y), true)),
             'value' : value
         };
+
         var lightbox = M.util.add_lightbox(Y, section);
         lightbox.show();
 

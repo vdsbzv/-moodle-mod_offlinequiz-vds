@@ -33,9 +33,6 @@ require_once($CFG->libdir . '/questionlib.php');
 require_once($CFG->dirroot . '/question/type/questionbase.php');
 require_once($CFG->dirroot . '/filter/tex/filter.php');
 require_once($CFG->dirroot . '/mod/offlinequiz/html2text.php');
-require_once($CFG->dirroot . '/mod/offlinequiz/documentlib.php');
-
-define('LOGO_MAX_ASPECT_RATIO', 3.714285714);
 
 class offlinequiz_pdf extends pdf
 {
@@ -113,14 +110,9 @@ class offlinequiz_answer_pdf extends offlinequiz_pdf {
 
         $logourl = trim($offlinequizconfig->logourl);
         if (!empty($logourl)) {
-            $aspectratio = $this->get_logo_aspect_ratio($logourl);
-            if ($aspectratio < LOGO_MAX_ASPECT_RATIO) {
-                $newlength = 54 * $aspectratio / LOGO_MAX_ASPECT_RATIO;
-                $this->IMAGE($logourl, 133, 10.8, $newlength, 0);
-            } else {
-                $this->Image($logourl, 133, 10.8, 54, 0);
-            }
-
+            $this->Image($logourl, 133, 10.8, 54, 0);
+        } else {
+            $this->Image("$CFG->dirroot/mod/offlinequiz/pix/logo.jpg", 160, 10.8, 0, 16);
         }
         // Print the top left fixation cross.
         $this->Line(11, 12, 14, 12);
@@ -135,8 +127,8 @@ class offlinequiz_answer_pdf extends offlinequiz_pdf {
         $this->Cell(90, 6, offlinequiz_str_html_pdf(get_string('forautoanalysis',  'offlinequiz')), 0, 1, 'C');
         $this->Ln(2);
         $this->SetFont('FreeSans', '', 8);
-        $this->Cell(90, 7, ' '.offlinequiz_str_html_pdf(get_string('firstname')).":", 1, 0, 'L');
-        $this->Cell(29, 7, ' '.offlinequiz_str_html_pdf(get_string('invigilator',  'offlinequiz')), 0, 1, 'C');
+        $this->Cell(90, 7, ' '.offlinequiz_str_html_pdf(get_string('firstname')).":", 1, 1, 'L');
+        //$this->Cell(29, 7, ' '.offlinequiz_str_html_pdf(get_string('invigilator',  'offlinequiz')), 0, 1, 'C');
         $this->Cell(90, 7, ' '.offlinequiz_str_html_pdf(get_string('lastname')).":", 1, 1, 'L');
         $this->Cell(90, 7, ' '.offlinequiz_str_html_pdf(get_string('signature',  'offlinequiz')).":", 1, 1, 'L');
         $this->Ln(5);
@@ -171,10 +163,13 @@ class offlinequiz_answer_pdf extends offlinequiz_pdf {
         $this->Ln(1);
         $this->MultiCell(115, 3, offlinequiz_str_html_pdf(get_string('instruction3',  'offlinequiz')), 0, 'L');
 
-        $this->Line(109, 29, 130, 29);                                 // Rectangle for the teachers to sign.
+        // Rectangle for the teachers to sign.
+        /*
+        $this->Line(109, 29, 130, 29);
         $this->Line(109, 50, 130, 50);
         $this->Line(109, 29, 109, 50);
         $this->Line(130, 29, 130, 50);
+        */
 
         $this->SetFont('FreeSans', 'B', 10);
         $this->SetXY(137, 27);
@@ -212,12 +207,6 @@ class offlinequiz_answer_pdf extends offlinequiz_pdf {
 
         $this->Ln();
     }
-
-    private function get_logo_aspect_ratio($logourl) {
-        list($originalwidth, $originalheight) = getimagesize($logourl);
-        return $originalwidth / $originalheight;
-    }
-
 
     /**
      * (non-PHPdoc)
@@ -389,7 +378,7 @@ class offlinequiz_participants_pdf extends offlinequiz_pdf
 
 /**
  * Returns a rendering of the number depending on the answernumbering format.
- *
+ * 
  * @param int $num The number, starting at 0.
  * @param string $style The style to render the number in. One of the
  * options returned by {@link qtype_multichoice:;get_numbering_styles()}.
@@ -438,32 +427,22 @@ function offlinequiz_create_pdf_question(question_usage_by_activity $templateusa
     $pdf->Ln(4);
     if (!$correction) {
         $pdf->Cell(0, 4, offlinequiz_str_html_pdf(get_string('questionsheet', 'offlinequiz')), 0, 0, 'C');
-        if ($offlinequiz->printstudycodefield) {
-            $pdf->Rect(34, 42, 137, 50, 'D');
-        } else {
-            $pdf->Rect(34, 42, 137, 40, 'D');
-        }
+        $pdf->Rect(34, 46, 137, 43, 'D');
         $pdf->SetFont('FreeSans', '', 10);
         // Line breaks to position name string etc. properly.
-        $pdf->Ln(14);
-        $pdf->Cell(58, 10, offlinequiz_str_html_pdf(get_string('name')) . ":", 0, 0, 'R');
-        $pdf->Rect(76, 54, 80, 0.3, 'F');
+        $pdf->Ln(20);
+        $pdf->Cell(58, 10, offlinequiz_str_html_pdf(get_string('name')).":", 0, 0, 'R');
+        $pdf->Rect(76, 60, 80, 0.3, 'F');
         $pdf->Ln(10);
-        $pdf->Cell(58, 10, offlinequiz_str_html_pdf(get_string('idnumber', 'offlinequiz')) . ":", 0, 0, 'R');
-        $pdf->Rect(76, 64, 80, 0.3, 'F');
+        $pdf->Cell(58, 10, offlinequiz_str_html_pdf(get_string('idnumber', 'offlinequiz')).":", 0, 0, 'R');
+        $pdf->Rect(76, 70, 80, 0.3, 'F');
         $pdf->Ln(10);
-        if ($offlinequiz->printstudycodefield) {
-            $pdf->Cell(58, 10, offlinequiz_str_html_pdf(get_string('studycode', 'offlinequiz')) . ":", 0, 0, 'R');
-            $pdf->Rect(76, 74, 80, 0.3, 'F');
-            $pdf->Ln(10);
-        }
-        $pdf->Cell(58, 10, offlinequiz_str_html_pdf(get_string('signature', 'offlinequiz')) . ":", 0, 0, 'R');
-        if ($offlinequiz->printstudycodefield) {
-            $pdf->Rect(76, 84, 80, 0.3, 'F');
-        } else {
-            $pdf->Rect(76, 74, 80, 0.3, 'F');
-        }
-        $pdf->Ln(25);
+        //$pdf->Cell(58, 10, offlinequiz_str_html_pdf(get_string('studycode', 'offlinequiz')).":", 0, 0, 'R');
+        //$pdf->Rect(76, 80, 80, 0.3, 'F');
+        //$pdf->Ln(10);
+        $pdf->Cell(58, 10, offlinequiz_str_html_pdf(get_string('signature', 'offlinequiz')).":", 0, 0, 'R');
+        $pdf->Rect(76, 80, 80, 0.3, 'F');
+        $pdf->Ln(33);
         $pdf->SetFont('FreeSans', '', $offlinequiz->fontsize);
         $pdf->SetFontSize($offlinequiz->fontsize);
 
@@ -508,7 +487,7 @@ function offlinequiz_create_pdf_question(question_usage_by_activity $templateusa
     $pdf->SetMargins(15, 15, 15);
 
     // Load all the questions needed for this offline quiz group.
-    $sql = "SELECT q.*, c.contextid, ogq.page, ogq.slot, ogq.maxmark
+    $sql = "SELECT q.*, c.contextid, ogq.page, ogq.slot, ogq.maxmark 
               FROM {offlinequiz_group_questions} ogq,
                    {question} q,
                    {question_categories} c
@@ -518,7 +497,7 @@ function offlinequiz_create_pdf_question(question_usage_by_activity $templateusa
                AND q.category = c.id
           ORDER BY ogq.slot ASC ";
     $params = array('offlinequizid' => $offlinequiz->id, 'offlinegroupid' => $group->id);
-
+ 
     // Load the questions.
     $questions = $DB->get_records_sql($sql, $params);
     if (!$questions) {
@@ -581,13 +560,17 @@ function offlinequiz_create_pdf_question(question_usage_by_activity $templateusa
             // Remove all class info from paragraphs because TCPDF won't use CSS.
             $questiontext = preg_replace('/<p[^>]+class="[^"]*"[^>]*>/i', "<p>", $questiontext);
 
-            $questiontext = $trans->fix_image_paths($questiontext, $question->contextid, 'questiontext', $question->id,
-                                1, 300, $offlinequiz->disableimgnewlines);
+            $questiontext = $trans->fix_image_paths($questiontext, $question->contextid, 'questiontext', $question->id, 1, 300);
 
             $html = '';
 
             $html .= $questiontext . '<br/><br/>';
             if ($question->qtype == 'multichoice' || $question->qtype == 'multichoiceset') {
+
+                // Save the usage slot in the group questions table.
+//                 $DB->set_field('offlinequiz_group_questions', 'usageslot', $slot,
+//                         array('offlinequizid' => $offlinequiz->id,
+//                                 'offlinegroupid' => $group->id, 'questionid' => $question->id));
 
                 // There is only a slot for multichoice questions.
                 $attempt = $templateusage->get_question_attempt($slot);
@@ -607,8 +590,7 @@ function offlinequiz_create_pdf_question(question_usage_by_activity $templateusa
                     // Remove <script> tags that are created by mathjax preview.
                     $answertext = preg_replace("/<script[^>]*>[^<]*<\/script>/ms", "", $answertext);
                     $answertext = preg_replace("/<\/p[^>]*>/ms", "", $answertext);
-                    $answertext = $trans->fix_image_paths($answertext, $question->contextid, 'answer', $answer,
-                                      1, 300, $offlinequiz->disableimgnewlines);
+                    $answertext = $trans->fix_image_paths($answertext, $question->contextid, 'answer', $answer, 1, 300);
 
                     if ($correction) {
                         if ($question->options->answers[$answer]->fraction > 0) {
@@ -630,18 +612,15 @@ function offlinequiz_create_pdf_question(question_usage_by_activity $templateusa
                     $html .= "<br/>\n";
                 }
 
-                $infostring = offlinequiz_get_question_infostring($offlinequiz, $question);
-                if ($infostring) {
-                    $html .= '<br/>' . $infostring . '<br/>';
+                if ($offlinequiz->showgrades) {
+                    $pointstr = get_string('points', 'grades');
+                    if ($question->maxmark == 1) {
+                        $pointstr = get_string('point', 'offlinequiz');
+                    }
+                    $html .= '<br/>(' . ($question->maxmark + 0) . ' ' . $pointstr .')<br/>';
                 }
+            }
 
-            }
-            if ($offlinequiz->disableimgnewlines) {
-                // This removes span attribute added by TEX filter which created extra line break after every LATEX formula.
-                $html = preg_replace("/(<span class=\"MathJax_Preview\">.+?)+(title=\"TeX\" >)/ms", "", $html);
-                $html = preg_replace("/<\/a><\/span>/ms", "", $html);
-                $html = preg_replace("/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/ms", "", $html);
-            }
             // Finally print the question number and the HTML string.
             if ($question->qtype == 'multichoice' || $question->qtype == 'multichoiceset') {
                 $pdf->SetFont('FreeSans', 'B', $offlinequiz->fontsize);
@@ -679,9 +658,9 @@ function offlinequiz_create_pdf_question(question_usage_by_activity $templateusa
             $questionslots[$templateusage->get_question($slot)->id] = $slot;
         }
         $currentpage = 1;
-        foreach ($questions as $question) {
+        foreach($questions as $question) {
             $currentquestionid = $question->id;
-
+            
             // Add page break if set explicitely by teacher.
             if ($question->page > $currentpage) {
                 $pdf->AddPage();
@@ -695,52 +674,58 @@ function offlinequiz_create_pdf_question(question_usage_by_activity $templateusa
                 $pdf->Ln( 14 );
             }
             set_time_limit( 120 );
-
-            // Either we print the question HTML.
-
+            
+            /**
+             * **************************************************
+             * either we print the question HTML 
+             * **************************************************
+             */
             $pdf->checkpoint();
-
+            
             $questiontext = $question->questiontext;
-
+            
             // Filter only for tex formulas.
             if (! empty ( $texfilter )) {
                 $questiontext = $texfilter->filter ( $questiontext );
             }
-
+            
             // Remove all HTML comments (typically from MS Office).
             $questiontext = preg_replace ( "/<!--.*?--\s*>/ms", "", $questiontext );
-
+            
             // Remove <font> tags.
             $questiontext = preg_replace ( "/<font[^>]*>[^<]*<\/font>/ms", "", $questiontext );
-
+            
             // Remove <script> tags that are created by mathjax preview.
             $questiontext = preg_replace ( "/<script[^>]*>[^<]*<\/script>/ms", "", $questiontext );
-
+            
             // Remove all class info from paragraphs because TCPDF won't use CSS.
             $questiontext = preg_replace ( '/<p[^>]+class="[^"]*"[^>]*>/i', "<p>", $questiontext );
-
-            $questiontext = $trans->fix_image_paths ( $questiontext, $question->contextid, 'questiontext', $question->id,
-                                  1, 300, $offlinequiz->disableimgnewlines );
-
+            
+            $questiontext = $trans->fix_image_paths ( $questiontext, $question->contextid, 'questiontext', $question->id, 1, 300 );
+            
             $html = '';
-
+            
             $html .= $questiontext . '<br/><br/>';
             if ($question->qtype == 'multichoice' || $question->qtype == 'multichoiceset') {
-
+                
                 $slot = $questionslots[$currentquestionid];
-
+                // Save the usage slot in the group questions table.
+                // $DB->set_field('offlinequiz_group_questions', 'usageslot', $slot,
+                // array('offlinequizid' => $offlinequiz->id,
+                // 'offlinegroupid' => $group->id, 'questionid' => $question->id));
+                
                 // There is only a slot for multichoice questions.
                 $slotquestion = $templateusage->get_question ( $slot );
                 $attempt = $templateusage->get_question_attempt ( $slot );
                 $order = $slotquestion->get_order ( $attempt ); // Order of the answers.
-
-                foreach ($order as $key => $answer) {
+                
+                foreach ( $order as $key => $answer ) {
                     $answertext = $question->options->answers[$answer]->answer;
                     // Filter only for tex formulas.
                     if (! empty ( $texfilter )) {
                         $answertext = $texfilter->filter ( $answertext );
                     }
-
+                    
                     // Remove all HTML comments (typically from MS Office).
                     $answertext = preg_replace ( "/<!--.*?--\s*>/ms", "", $answertext );
                     // Remove all paragraph tags because they mess up the layout.
@@ -748,20 +733,20 @@ function offlinequiz_create_pdf_question(question_usage_by_activity $templateusa
                     // Remove <script> tags that are created by mathjax preview.
                     $answertext = preg_replace ( "/<script[^>]*>[^<]*<\/script>/ms", "", $answertext );
                     $answertext = preg_replace ( "/<\/p[^>]*>/ms", "", $answertext );
-                    $answertext = $trans->fix_image_paths ( $answertext, $question->contextid, 'answer', $answer,
-                                      1, 300, $offlinequiz->disableimgnewlines );
-
+                    $answertext = $trans->fix_image_paths ( $answertext, $question->contextid, 'answer', $answer, 1, 300 );
+                    // Was $pdf->GetK()).
+                    
                     if ($correction) {
                         if ($question->options->answers[$answer]->fraction > 0) {
                             $html .= '<b>';
                         }
-
+                        
                         $answertext .= " (" . round ( $question->options->answers[$answer]->fraction * 100 ) . "%)";
                     }
-
+                    
                     $html .= number_in_style ( $key, $question->options->answernumbering ) . ') &nbsp; ';
                     $html .= $answertext;
-
+                    
                     if ($correction) {
                         if ($question->options->answers[$answer]->fraction > 0) {
                             $html .= '</b>';
@@ -769,42 +754,38 @@ function offlinequiz_create_pdf_question(question_usage_by_activity $templateusa
                     }
                     $html .= "<br/>\n";
                 }
-
-                $infostring = offlinequiz_get_question_infostring($offlinequiz, $question);
-                if ($infostring) {
-                    $html .= '<br/>' . $infostring . '<br/>';
+                
+                if ($offlinequiz->showgrades) {
+                    $pointstr = get_string ( 'points', 'grades' );
+                    if ($question->maxmark == 1) {
+                        $pointstr = get_string ( 'point', 'offlinequiz' );
+                    }
+                    $html .= '<br/>(' . ($question->maxmark + 0) . ' ' . $pointstr . ')<br/>';
                 }
             }
-
+            
             // Finally print the question number and the HTML string.
             if ($question->qtype == 'multichoice' || $question->qtype == 'multichoiceset') {
                 $pdf->SetFont ( 'FreeSans', 'B', $offlinequiz->fontsize );
                 $pdf->Cell ( 4, round ( $offlinequiz->fontsize / 2 ), "$number)  ", 0, 0, 'R' );
                 $pdf->SetFont ( 'FreeSans', '', $offlinequiz->fontsize );
             }
-
-            // This removes span attribute added by TEX filter which created extra line break after every LATEX formula.
-            if ($offlinequiz->disableimgnewlines) {
-                $html = preg_replace("/(<span class=\"MathJax_Preview\">.+?)+(title=\"TeX\" >)/ms", "", $html);
-                $html = preg_replace("/<\/a><\/span>/ms", "", $html);
-                $html = preg_replace("/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/ms", "", $html);
-            }
-
+            
             $pdf->writeHTMLCell ( 165, round ( $offlinequiz->fontsize / 2 ), $pdf->GetX (), $pdf->GetY () + 0.3, $html );
             $pdf->Ln ();
-
+            
             if ($pdf->is_overflowing ()) {
                 $pdf->backtrack ();
                 $pdf->AddPage ();
                 $pdf->Ln ( 14 );
-
+                
                 // Print the question number and the HTML string again on the new page.
                 if ($question->qtype == 'multichoice' || $question->qtype == 'multichoiceset') {
                     $pdf->SetFont ( 'FreeSans', 'B', $offlinequiz->fontsize );
                     $pdf->Cell ( 4, round ( $offlinequiz->fontsize / 2 ), "$number)  ", 0, 0, 'R' );
                     $pdf->SetFont ( 'FreeSans', '', $offlinequiz->fontsize );
                 }
-
+                
                 $pdf->writeHTMLCell ( 165, round ( $offlinequiz->fontsize / 2 ), $pdf->GetX (), $pdf->GetY () + 0.3, $html );
                 $pdf->Ln ();
             }
@@ -824,7 +805,7 @@ function offlinequiz_create_pdf_question(question_usage_by_activity $templateusa
     $date = usergetdate(time());
     $timestamp = sprintf('%04d%02d%02d_%02d%02d%02d',
             $date['year'], $date['mon'], $date['mday'], $date['hours'], $date['minutes'], $date['seconds']);
-
+    
     $fileinfo = array(
             'contextid' => $context->id,
             'component' => 'mod_offlinequiz',
@@ -904,7 +885,7 @@ function offlinequiz_create_pdf_answer($maxanswers, $templateusage, $offlinequiz
     // Load all the questions and quba slots needed by this script.
     $slots = $templateusage->get_slots();
 
-    $sql = "SELECT q.*, c.contextid, ogq.page, ogq.slot, ogq.maxmark
+    $sql = "SELECT q.*, c.contextid, ogq.page, ogq.slot, ogq.maxmark 
               FROM {offlinequiz_group_questions} ogq,
                    {question} q,
                    {question_categories} c
@@ -984,6 +965,10 @@ function offlinequiz_create_pdf_answer($maxanswers, $templateusage, $offlinequiz
 
         $pdf->Ln(6.5);
 
+//         // Save the answer page number in the group questions table.
+//          $DB->set_field('offlinequiz_group_questions', 'pagenumber', $page, array('offlinequizid' => $offlinequiz->id,
+//                 'offlinegroupid' => $group->id, 'questionid' => $question->id));
+
         // Switch to next column if necessary.
         if (($number + 1) % 24 == 0) {
             $pdf->SetY($offsety);
@@ -999,8 +984,8 @@ function offlinequiz_create_pdf_answer($maxanswers, $templateusage, $offlinequiz
         $number ++;
     }
 
-    $group->numberofpages = $page;
-    $DB->update_record('offlinequiz_groups', $group);
+    // Save the number of pages in the group questions table.
+    $DB->set_field('offlinequiz_groups', 'numberofpages', $page, array('id' => $group->id));
 
     $fs = get_file_storage();
 

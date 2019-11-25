@@ -68,11 +68,10 @@ class offlinequiz_selectall_table extends flexible_table {
 
         echo '<table id="commands">';
         echo '<tr><td>';
-        echo '<a href="#" class="selectall">'. $strselectall . '</a> / ';
-        echo '<a href="#" class="deselectall">' . $strselectnone . '</a> ';
+        echo '<a href="javascript:select_all_in(\'FORM\',null, \'reportform\');">'. $strselectall . '</a> / ';
+        echo '<a href="javascript:deselect_all_in(\'FORM\',null,\'reportform\');">' . $strselectnone . '</a> ';
         echo '&nbsp;&nbsp;';
-        echo '<input type="submit" value="'.get_string('deleteselectedpages', 'offlinequiz_rimport')
-              . '" class="btn btn-secondary"/>';
+        echo '<input type="submit" value="'.get_string('deleteselectedpages', 'offlinequiz_rimport').'"/>';
         echo '</td></tr></table>';
         echo '  </center>';
         // Close form.
@@ -89,14 +88,16 @@ class offlinequiz_partlist_table extends offlinequiz_selectall_table {
 
         echo '<table id="commands">';
         echo '<tr><td>';
-        echo '<a href="#" class="selectall">'. $strselectall . '</a> / ';
-        echo '<a href="#" class="deselectall">' . $strselectnone . '</a> ';
+        echo '<a href="javascript:select_all_in(\'FORM\',null, \'reportform\');">'. $strselectall . '</a> / ';
+        echo '<a href="javascript:deselect_all_in(\'FORM\',null,\'reportform\');">' . $strselectnone . '</a> ';
         echo '&nbsp;&nbsp;';
         $options = array('check' => get_string('checkparts', 'offlinequiz'),
                 'uncheck' => get_string('uncheckparts', 'offlinequiz'));
         echo html_writer::select($options, 'action', '', array('' => 'choosedots'),
                 array('onchange' => 'this.form.submit(); return true;'));
 
+        // Choose_from_menu($options, 'action', '', get_string('withselected', 'offlinequiz'),
+        // 'if(this.selectedIndex > 0) submitFormById(\'participantform\');', '', true).
         echo '<noscript id="noscriptmenuaction" style="display: inline;"><div>';
         echo '<input type="submit" value="'.get_string('go').'" /></div></noscript>';
         echo '<script type="text/javascript">' . "\n<!--\n" .

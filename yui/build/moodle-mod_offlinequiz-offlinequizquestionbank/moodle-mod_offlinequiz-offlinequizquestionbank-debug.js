@@ -28,7 +28,7 @@ YUI.add('moodle-mod_offlinequiz-offlinequizquestionbank', function (Y, NAME) {
 
 var CSS = {
         QBANKLOADING:       'div.questionbankloading',
-        ADDQUESTIONLINKS:   '.menu [data-action="questionbank"]',
+        ADDQUESTIONLINKS:   'ul.menu a.questionbank',
         ADDTOQUIZCONTAINER: 'td.addtoofflinequizaction',
         PREVIEWCONTAINER:   'td.previewaction',
         SEARCHOPTIONS:      '#advancedsearch'

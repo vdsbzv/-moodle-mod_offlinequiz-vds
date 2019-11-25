@@ -29,7 +29,7 @@ namespace mod_offlinequiz;
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/mod/offlinequiz/offlinequiz.class.php');
-
+    
 
 /**
  * Offlinequiz structure class.
@@ -51,12 +51,10 @@ class structure {
      */
     protected $questions = array();
 
-    /** @var \stdClass[] offlinequiz_group_questions.id =>
-     * the offlinequiz_group_questions rows for this offlinequiz, agumented by sectionid. */
+    /** @var \stdClass[] offlinequiz_group_questions.id => the offlinequiz_group_questions rows for this offlinequiz, agumented by sectionid. */
     protected $slots = array();
 
-    /** @var \stdClass[] offlinequiz_group_questions.slot =>
-     * the offlinequiz_group_questions rows for this offlinequiz, agumented by sectionid. */
+    /** @var \stdClass[] offlinequiz_group_questions.slot => the offlinequiz_group_questions rows for this offlinequiz, agumented by sectionid. */
     protected $slotsinorder = array();
 
     /**
@@ -69,7 +67,7 @@ class structure {
     protected $canbeedited = null;
 
     private $warnings = array();
-
+    
     /**
      * Create an instance of this class representing an empty offlinequiz.
      * @return structure
@@ -150,7 +148,7 @@ class structure {
     public function get_offlinegroupid() {
         return $this->offlinequizobj->get_offlinegroupid();
     }
-
+    
     /**
      * Get the offlinequiz object.
      * @return \stdClass the offlinequiz settings row from the database.
@@ -227,7 +225,7 @@ class structure {
     public function get_slots_in_order() {
         return $this->slotsinorder;
     }
-
+    
     /**
      * Is this slot the first one on its page?
      * @param int $slotnumber the index of the slot in question.
@@ -271,15 +269,6 @@ class structure {
     }
 
     /**
-     * Get the page a given slot is on.
-     * @param int $slotnumber the index of the slot in question.
-     * @return int the page number of the page that slot is on.
-     */
-    public function get_page_number_for_slot($slotnumber) {
-        return $this->slotsinorder[$slotnumber]->page;
-    }
-
-    /**
      * Get a slot by it's id. Throws an exception if it is missing.
      * @param int $slotid the slot id.
      * @return \stdClass the requested offlinequiz_group_questions row.
@@ -320,11 +309,11 @@ class structure {
      */
     public function get_edit_page_warnings() {
         global $CFG;
-
+        
         $warnings = array();
 
         if (!$this->can_be_edited()) {
-            $reviewlink = new \moodle_url($CFG->wwwroot . '/mod/offlinequiz/createquiz.php',
+            $reviewlink = new \moodle_url($CFG->wwwroot . '/mod/offlinequiz/createquiz.php', 
                     array ('q' => $this->offlinequizobj->get_offlinequiz()->id,
                            'mode' => 'createpdfs'));
             $warnings[] = get_string('formsexistx', 'offlinequiz', $reviewlink->out(false));
@@ -348,7 +337,7 @@ class structure {
         foreach ($this->warnings as $warning) {
             $warnings[] = '<b>' . $warning . '</b>';
         }
-
+        
         return $warnings;
     }
 
@@ -372,7 +361,7 @@ class structure {
         }
         if ($offlinequiz->timeclose > 0) {
             if ($timenow > $offlinequiz->timeclose) {
-                $dates[] = get_string('offlinequizisclosed', 'offlinequiz', userdate($offlinequiz->timeclose));
+                $dates[] = get_string('offlinequizclosed', 'offlinequiz', userdate($offlinequiz->timeclose));
             } else {
                 $dates[] = get_string('offlinequizcloseson', 'offlinequiz', userdate($offlinequiz->timeclose));
             }
@@ -580,7 +569,7 @@ class structure {
                    AND offlinegroupid = ?
                    AND page > 1
                    AND NOT EXISTS (SELECT 1 FROM {offlinequiz_group_questions}
-                                           WHERE offlinequizid = ?
+                                           WHERE offlinequizid = ? 
                                              AND offlinegroupid = ?
                                              AND page = slot.page - 1)
               ORDER BY page - 1 DESC
@@ -664,7 +653,7 @@ class structure {
 
         $slot = $DB->get_record('offlinequiz_group_questions', array('offlinequizid' => $offlinequiz->id,
                 'offlinegroupid' => $offlinequiz->groupid, 'slot' => $slotnumber));
-        $maxslot = $DB->get_field_sql('SELECT MAX(slot)
+        $maxslot = $DB->get_field_sql('SELECT MAX(slot) 
                                          FROM {offlinequiz_group_questions}
                                         WHERE offlinequizid = ?
                                           AND offlinegroupid = ?',
@@ -718,18 +707,18 @@ class structure {
         $trans = $DB->start_delegated_transaction();
         $slot->maxmark = $maxmark;
         $DB->update_record('offlinequiz_group_questions', $slot);
-
+        
         // We also need to update the maxmark for this question in other offlinequiz groups.
         $offlinequiz = $this->offlinequizobj->get_offlinequiz();
         $currentgroupid = $offlinequiz->groupid;
-
+        
         $groupids = $DB->get_fieldset_select('offlinequiz_groups', 'id',
                 'offlinequizid = :offlinequizid AND id <> :currentid',
                 array('offlinequizid' => $offlinequiz->id, 'currentid' => $currentgroupid));
         $params = array();
         if ($groupids) {
             list($gsql, $params) = $DB->get_in_or_equal($groupids, SQL_PARAMS_NAMED, 'grp');
-
+        
             $sql = "SELECT *
                       FROM {offlinequiz_group_questions}
                      WHERE offlinequizid = :offlinequizid
@@ -745,9 +734,11 @@ class structure {
                 $DB->update_record('offlinequiz_group_questions', $otherslot);
             }
         }
-
+        
         // Now look at the maxmark of attemps.
         // We do this already in offlinequiz_update_question_instance.
+//         \question_engine::set_max_mark_in_attempts(new \result_qubaids_for_offlinequiz($slot->offlinequizid, $slot->offlinegroupid),
+//                 $slot->slot, $maxmark);
         $trans->allow_commit();
 
         return true;
@@ -778,7 +769,7 @@ class structure {
 
         return $slots;
     }
-
+    
     public function add_warning($string) {
         $this->warnings[] = $string;
     }

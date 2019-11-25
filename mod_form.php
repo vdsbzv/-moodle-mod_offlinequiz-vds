@@ -54,6 +54,8 @@ class mod_offlinequiz_mod_form extends moodleform_mod {
         // -------------------------------------------------------------------------------
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
+        $mform->addElement('html', '<center>' . get_string('pluginname', 'offlinequiz') . '</center>');
+
         if ($offlinequiz && $offlinequiz->docscreated) {
             $mform->addElement('html', "<center><a href=\"" . $CFG->wwwroot .
                     "/mod/offlinequiz/createquiz.php?mode=createpdfs&amp;q=$offlinequiz->id\">" .
@@ -155,7 +157,6 @@ class mod_offlinequiz_mod_form extends moodleform_mod {
         $options[8] = 8;
         $options[9] = 9;
         $options[10] = 10;
-        $options[11] = 11;
         $options[12] = 12;
         $options[14] = 14;
         $mform->addElement('select', 'fontsize', get_string('fontsize', 'offlinequiz'), $options, $attribs);
@@ -178,10 +179,6 @@ class mod_offlinequiz_mod_form extends moodleform_mod {
         $options[OFFLINEQUIZ_QUESTIONINFO_ANSWERS] = get_string("questioninfoanswers", "offlinequiz");
         $mform->addElement('select', 'showquestioninfo', get_string("showquestioninfo", "offlinequiz"), $options, $attribs);
         $mform->addHelpButton('showquestioninfo', "showquestioninfo", "offlinequiz");
-
-        $mform->addElement('selectyesno', 'disableimgnewlines', get_string("disableimgnewlines", "offlinequiz"), $attribs);
-        $mform->addHelpButton('disableimgnewlines', 'disableimgnewlines', 'offlinequiz');
-        $mform->setDefault('disableimgnewlines', $offlinequizconfig->disableimgnewlines);
 
         // -------------------------------------------------------------------------------
         $mform->addElement('header', 'reviewoptionshdr', get_string("reviewoptions", "offlinequiz"));
@@ -220,9 +217,9 @@ class mod_offlinequiz_mod_form extends moodleform_mod {
 
         $language = current_language();
 
-        $mform->addElement('html', '<input id="showviewbutton" type="button" class="btn btn-secondary" value="'.
+        $mform->addElement('html', '<input id="showviewbutton" type="button" value="'.
                 get_string('showstudentview', 'offlinequiz') . '" onClick="showStudentView(); return false;">');
-        $mform->addElement('html', '<div class="Popup"><center><input type="button" class="closePopup btn btn-primary"' .
+        $mform->addElement('html', '<div class="Popup"><center><input type="button" class="closePopup"' .
                 ' onClick="closePopup(); return false;" value="' . get_string('closestudentview', 'offlinequiz') .
                 '"/></center><br/></div>');
         $mform->addElement('html', '<div id="overlay" class="closePopup"></div>');

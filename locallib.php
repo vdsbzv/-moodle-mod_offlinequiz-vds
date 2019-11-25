@@ -59,7 +59,7 @@ define("OFFLINEQUIZ_PART_USER_ERROR", "23");
 define("OFFLINEQUIZ_PART_LIST_ERROR", "24");
 define("OFFLINEQUIZ_IMPORT_NUMUSERS", "50");
 
-define('OFFLINEQUIZ_USER_FORMULA_REGEXP', "/^([^\[]*)\[([\-]?[0-9]+)\]([^\=]*)=([a-z]+)$/");
+define('OFFLINEQUIZ_USER_FORMULA_REGEXP', "/^([0-9a-zA-Z]*)\[([\-]?[0-9]+)\]([0-9a-zA-Z]*)=([a-z]+)$/");
 
 define('OFFLINEQUIZ_GROUP_LETTERS', "ABCDEFGHIJKL");  // Letters for naming offlinequiz groups.
 
@@ -997,6 +997,7 @@ function offlinequiz_update_sumgrades($offlinequiz, $offlinegroupid = null) {
     $DB->execute($sql, $params);
 
     $sumgrades = $DB->get_field('offlinequiz_groups', 'sumgrades', array('id' => $groupid));
+
     return $sumgrades;
 }
 
@@ -1137,8 +1138,8 @@ class mod_offlinequiz_display_options extends question_display_options {
         $options = new self();
 
         $options->attempt = self::extract($offlinequiz->review, OFFLINEQUIZ_REVIEW_ATTEMPT);
-        $options->marks = self::extract($offlinequiz->review, OFFLINEQUIZ_REVIEW_MARKS)
-                          ? question_display_options::MARK_AND_MAX : question_display_options::HIDDEN;
+        $options->marks = self::extract($offlinequiz->review, OFFLINEQUIZ_REVIEW_MARKS) ?
+            question_display_options::MARK_AND_MAX : question_display_options::HIDDEN;
         $options->correctness = self::extract($offlinequiz->review, OFFLINEQUIZ_REVIEW_CORRECTNESS);
         $options->feedback = self::extract($offlinequiz->review, OFFLINEQUIZ_REVIEW_SPECIFICFEEDBACK);
         $options->generalfeedback = self::extract($offlinequiz->review, OFFLINEQUIZ_REVIEW_GENERALFEEDBACK);
@@ -1562,7 +1563,7 @@ function offlinequiz_print_question_preview($question, $choiceorder, $number, $c
             // Remove all paragraph tags because they mess up the layout.
             $answertext = preg_replace("/<p[^>]*>/ms", "", $answertext);
             $answertext = preg_replace("/<\/p[^>]*>/ms", "", $answertext);
-            // Rewrite image URLs.
+            //rewrite image URLs
             $answertext = question_rewrite_question_preview_urls($answertext, $question->id,
             $question->contextid, 'question', 'answer', $question->options->answers[$answer]->id,
             $context->id, 'offlinequiz');
@@ -1659,7 +1660,9 @@ function offlinequiz_print_partlist($offlinequiz, &$coursecontext, &$systemconte
 
     // Define table columns.
     $tablecolumns = array('checkbox', 'picture', 'fullname', $offlinequizconfig->ID_field, 'number', 'attempt', 'checked');
-    $tableheaders = array('<input type="checkbox" name="toggle" class="select-all-checkbox"/>',
+    $tableheaders = array('<input type="checkbox" name="toggle" onClick="' .
+                          'if (this.checked) {select_all_in(\'DIV\', null, \'tablecontainer\');} ' .
+                          ' else {deselect_all_in(\'DIV\', null, \'tablecontainer\');}"/>',
             '', get_string('fullname'), get_string($offlinequizconfig->ID_field), get_string('participantslist', 'offlinequiz'),
             get_string('attemptexists', 'offlinequiz'), get_string('present', 'offlinequiz'));
 
@@ -1736,19 +1739,18 @@ function offlinequiz_print_partlist($offlinequiz, &$coursecontext, &$systemconte
                 $attempt = false;
             }
             $row = array(
-                    '<input type="checkbox" name="participantid[]" value="' . $participant->id
-                     . '"  class="select-multiple-checkbox"/>',
+                    '<input type="checkbox" name="participantid[]" value="'.$participant->id.'" />',
                     $picture,
                     $userlink,
                     $participant->{$offlinequizconfig->ID_field},
                     $lists[$participant->listid]->name,
                     $attempt ? "<img src=\"$CFG->wwwroot/mod/offlinequiz/pix/tick.gif\" alt=\"" .
-                    get_string('attemptexists', 'offlinequiz') . "\">"
-                     : "<img src=\"$CFG->wwwroot/mod/offlinequiz/pix/cross.gif\" alt=\"" .
+                    get_string('attemptexists', 'offlinequiz') . "\">" :
+                    "<img src=\"$CFG->wwwroot/mod/offlinequiz/pix/cross.gif\" alt=\"" .
                     get_string('noattemptexists', 'offlinequiz') . "\">",
-                    $participant->checked ? "<img src=\"$CFG->wwwroot/mod/offlinequiz/pix/tick.gif\" alt=\""
-                     . get_string('ischecked', 'offlinequiz') . "\">"
-                     : "<img src=\"$CFG->wwwroot/mod/offlinequiz/pix/cross.gif\" alt=\"" .
+                    $participant->checked ? "<img src=\"$CFG->wwwroot/mod/offlinequiz/pix/tick.gif\" alt=\"" .
+                    get_string('ischecked', 'offlinequiz') . "\">" :
+                    "<img src=\"$CFG->wwwroot/mod/offlinequiz/pix/cross.gif\" alt=\"" .
                     get_string('isnotchecked', 'offlinequiz') . "\">"
                     );
             switch ($checkoption) {
@@ -1791,7 +1793,7 @@ function offlinequiz_print_partlist($offlinequiz, &$coursecontext, &$systemconte
         print_string('downloadresultsas', 'offlinequiz');
         echo "</td><td>";
         echo html_writer::select($options, 'download', '', false);
-        echo '<button type="submit" class="btn btn-primary" >' . get_string('go') . '</button>';
+        echo '<input type="submit" value="' . get_string('go') . '" />';
         echo '<script type="text/javascript">'."\n<!--\n".'document.getElementById("noscriptmenuaction").style.display = "none";'.
             "\n-->\n".'</script>';
         echo "</td>\n";
@@ -1825,7 +1827,7 @@ function offlinequiz_print_partlist($offlinequiz, &$coursecontext, &$systemconte
     echo html_writer::select($options, 'checkoption', $checkoption);
     echo '</td></tr>';
     echo '<tr><td colspan="2" align="center">';
-    echo '<button type="submit" class="btn btn-secondary" >' .get_string('go'). '</button>';
+    echo '<input type="submit" value="'.get_string('go').'" />';
     echo '</td></tr></table>';
     echo '</center>';
     echo '</form>';
@@ -1966,7 +1968,7 @@ function offlinequiz_download_partlist($offlinequiz, $fileformat, &$coursecontex
         }
         $rownum = 1;
     } else if ($fileformat == 'CSV') {
-        $filename .= ".csv";
+        $filename .= ".txt";
 
         header("Content-Type: application/download\n");
         header("Content-Disposition: attachment; filename=\"$filename\"");
@@ -2218,6 +2220,7 @@ function offlinequiz_add_random_questions($offlinequiz, $offlinegroup, $category
     $qcparams['offlinegroupid'] = $offlinegroup->id;
 
     $questionids = $DB->get_fieldset_sql($sql, $qcparams);
+    srand(microtime() * 1000000);
     shuffle($questionids);
 
     $chosenids = array();
@@ -2308,7 +2311,7 @@ function offlinequiz_remove_questionlist($offlinequiz, $questionids) {
         // Reduce the slot number in the following slots if there are any.
         // Also reduce the page number if necessary.
         if ($nextslot) {
-            for ($curslotnr = $nextslot->slot; $curslotnr <= $lastslot->slot; $curslotnr++) {
+            for ($curslotnr = $nextslot->slot ; $curslotnr <= $lastslot->slot; $curslotnr++) {
                 if ($slotsinorder[$curslotnr]) {
                     if ($removepage) {
                         $slotsinorder[$curslotnr]->page = $slotsinorder[$curslotnr]->page - 1;
@@ -2321,5 +2324,5 @@ function offlinequiz_remove_questionlist($offlinequiz, $questionids) {
         }
 
         $trans->allow_commit();
-    }
+   }
 }

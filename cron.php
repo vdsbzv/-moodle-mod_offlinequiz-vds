@@ -67,21 +67,19 @@ function offlinequiz_evaluation_cron($jobid = 0, $verbose = false) {
 
     // If there are no new jobs, we simply exit.
     if (!$jobs = $DB->get_records_sql($sql, $params, 0, OFFLINEQUIZ_TOP_QUEUE_JOBS)) {
-        if ($verbose) {
-            echo get_string('nothingtodo', 'offlinequiz');
-        }
+        //if ($verbose) {
+        echo get_string('nothingtodo', 'offlinequiz');
+        //}
         return;
     }
     $numberofjobs = count($jobs);
-
-    if ($verbose) {
-        $pbar = new progress_bar('offlinequizcronbar', 500, true);
-        $pbar->create();
-        $pbar->update(0, $numberofjobs,
+    
+    $pbar = new progress_bar('offlinequizcronbar', 500, true);
+    $pbar->create();
+    $pbar->update(0, $numberofjobs,
                         "Processing job - {0}/{$numberofjobs}.");
-    }
     $numberdone = 0;
-
+    
     foreach ($jobs as $job) {
         // Check whether the status is still 'new' (might have been changed by other cronjob).
         $transaction = $DB->start_delegated_transaction();
@@ -138,8 +136,8 @@ function offlinequiz_evaluation_cron($jobid = 0, $verbose = false) {
                        AND status = 'new'",
                     array('queueid' => $job->id));
 
-            list($maxquestions, $maxanswers, $formtype, $questionsperpage)
-                  = offlinequiz_get_question_numbers($offlinequiz, $groups);
+            list($maxquestions, $maxanswers, $formtype, $questionsperpage) =
+                offlinequiz_get_question_numbers($offlinequiz, $groups);
 
             $dirname = '';
             $doubleentry = 0;
@@ -223,7 +221,7 @@ function offlinequiz_evaluation_cron($jobid = 0, $verbose = false) {
                     echo 'job ' . $job->id . ': ' . $e->getMessage() . "\n";
                     $DB->set_field('offlinequiz_queue_data', 'status', 'error', array('id' => $data->id));
                     $DB->set_field('offlinequiz_queue_data', 'error', 'couldnotgrab', array('id' => $data->id));
-                    $DB->set_field('offlinequiz_queue_data', 'info', $e->getMessage(), array('id' => $data->id));
+                    $DB->set_field('offlinequiz_queue_data', 'info', print_r($e, true), array('id' => $data->id));
                     $scannedpage->status = 'error';
                     $scannedpage->error = 'couldnotgrab';
                     if ($scannedpage->id) {
@@ -278,11 +276,12 @@ function offlinequiz_evaluation_cron($jobid = 0, $verbose = false) {
             }
         } // End !alreadydone.
         $numberdone++;
-        if ($verbose) {
+        //if ($verbose) {
+            ob_flush();
             $pbar->update($numberdone, $numberofjobs,
                         "Processing job - {$numberdone}/{$numberofjobs}.");
-        }
-
+        //}
+        
     } // End foreach.
 } // End function.
 

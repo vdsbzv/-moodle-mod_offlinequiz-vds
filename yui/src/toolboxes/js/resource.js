@@ -62,37 +62,6 @@ Y.extend(RESOURCETOOLBOX, TOOLBOX, {
         M.mod_offlinequiz.offlinequizbase.register_module(this);
         BODY.delegate('key', this.handle_data_action, 'down:enter', SELECTOR.ACTIVITYACTION, this);
         Y.delegate('click', this.handle_data_action, BODY, SELECTOR.ACTIVITYACTION, this);
-        this.initialise_select_multiple();
-    },
-    /**
-     * Initialize the select multiple options
-     *
-     * Add actions to the buttons that enable multiple slots to be selected and managed at once.
-     *
-     * @method initialise_select_multiple
-     * @protected
-     */
-    initialise_select_multiple: function() {
-        // Click select all link to check all the checkboxes.
-        Y.all(SELECTOR.SELECTALL).on('click', function(e) {
-            e.preventDefault();
-            Y.all(SELECTOR.SELECTMULTIPLECHECKBOX).set('checked', 'checked');
-            Y.all(SELECTOR.SELECTALLCHECKBOX).set('checked', 'checked');
-        });
-
-        // Click deselect all link to show the select all checkboxes.
-        Y.all(SELECTOR.DESELECTALL).on('click', function(e) {
-            e.preventDefault();
-            Y.all(SELECTOR.SELECTMULTIPLECHECKBOX).set('checked', '');
-            Y.all(SELECTOR.SELECTALLCHECKBOX).set('checked', '');
-        });
-        Y.all(SELECTOR.SELECTALLCHECKBOX).on('click', function(e) {
-            if (e.target._node.checked){
-                Y.all(SELECTOR.SELECTMULTIPLECHECKBOX).set('checked', 'checked');
-            } else {
-                Y.all(SELECTOR.SELECTMULTIPLECHECKBOX).set('checked', '');
-            }
-        });
     },
 
     /**
@@ -176,7 +145,7 @@ Y.extend(RESOURCETOOLBOX, TOOLBOX, {
 
         // Get the element we're working on.
         var element   = activity,
-            // Create confirm string (different if element has or does not have name).
+            // Create confirm string (different if element has or does not have name)
             confirmstring = '',
             qtypename = M.util.get_string('pluginname',
                         'qtype_' + element.getAttribute('class').match(/qtype_([^\s]*)/)[1]);
@@ -228,20 +197,20 @@ Y.extend(RESOURCETOOLBOX, TOOLBOX, {
      * @return Boolean
      */
     edit_maxmark : function(ev, button, activity) {
-        // Get the element we're working on.
+        // Get the element we're working on
         var activityid = Y.Moodle.mod_offlinequiz.util.slot.getId(activity),
-        instancemaxmark  = activity.one(SELECTOR.INSTANCEMAXMARK),
-        instance = activity.one(SELECTOR.ACTIVITYINSTANCE),
-        currentmaxmark = instancemaxmark.get('firstChild'),
-        oldmaxmark = currentmaxmark.get('data'),
-        maxmarktext = oldmaxmark,
-        thisevent,
-        anchor = instancemaxmark,// Grab the anchor so that we can swap it with the edit form.
-        data = {
-            'class'   : 'resource',
-            'field'   : 'getmaxmark',
-            'id'      : activityid
-        };
+            instancemaxmark  = activity.one(SELECTOR.INSTANCEMAXMARK),
+            instance = activity.one(SELECTOR.ACTIVITYINSTANCE),
+            currentmaxmark = instancemaxmark.get('firstChild'),
+            oldmaxmark = currentmaxmark.get('data'),
+            maxmarktext = oldmaxmark,
+            thisevent,
+            anchor = instancemaxmark,// Grab the anchor so that we can swap it with the edit form.
+            data = {
+                'class'   : 'resource',
+                'field'   : 'getmaxmark',
+                'id'      : activityid
+            };
 
         // Prevent the default actions.
         ev.preventDefault();
@@ -280,7 +249,7 @@ Y.extend(RESOURCETOOLBOX, TOOLBOX, {
                 padside = 'right';
             }
 
-            // We hide various components whilst editing.
+            // We hide various components whilst editing:
             activity.addClass(CSS.EDITINGMAXMARK);
 
             // Focus and select the editor text.
@@ -353,7 +322,7 @@ Y.extend(RESOURCETOOLBOX, TOOLBOX, {
      * @param {Node} activity  The activity whose maxmark we were altering.
      */
     edit_maxmark_clear : function(activity) {
-        // Detach all listen events to prevent duplicate triggers.
+        // Detach all listen events to prevent duplicate triggers
         new Y.EventHandle(this.editmaxmarkevents).detach();
 
         var editform = activity.one(SELECTOR.ACTIVITYFORM),
@@ -393,20 +362,25 @@ Y.extend(RESOURCETOOLBOX, TOOLBOX, {
      * @chainable
      */
     update_page_break: function(ev, button, activity, action) {
-        // Prevent the default button action.
+        // Prevent the default button action
         ev.preventDefault();
 
-        var nextactivity = activity.next('li.activity.slot');
-        var spinner = null;
+        nextactivity = activity.next('li.activity.slot');
+        var spinner = this.add_spinner(nextactivity),
+            slotid = 0;
         var value = action === 'removepagebreak' ? 1 : 2;
 
         var data = {
             'class': 'resource',
             'field': 'updatepagebreak',
-            'id':    Y.Moodle.mod_offlinequiz.util.slot.getId(nextactivity),
+            'id':    slotid,
             'value': value
         };
 
+        slotid = Y.Moodle.mod_offlinequiz.util.slot.getId(nextactivity);
+        if (slotid) {
+            data.id = Number(slotid);
+        }
         this.send_request(data, spinner, function(response) {
             if (response.slots) {
                 if (action === 'addpagebreak') {
@@ -416,6 +390,8 @@ Y.extend(RESOURCETOOLBOX, TOOLBOX, {
                     Y.Moodle.mod_offlinequiz.util.page.remove(page, true);
                 }
                 this.reorganise_edit_page();
+            } else {
+                window.location.reload(true);
             }
         });
 
@@ -443,7 +419,7 @@ Y.extend(RESOURCETOOLBOX, TOOLBOX, {
             'value' : 0
         },
         offlinegroupid : {
-            'value' : 0
+        	'value' : 0
         }
     }
 });
