@@ -747,4 +747,33 @@ class offlinequiz_overview_report extends offlinequiz_default_report {
 
         return true;
     }
+
+    private function get_grade($context, $courseid, $offlinequizid, $userid) {
+        $gradinginfo = grade_get_grades($courseid, 'mod', 'offlinequiz', $offlinequizid, $userid);
+        $gradeitem = $gradinginfo->items[0];
+        if ($gradeitem != null) {
+            $letters = grade_get_letters($context);
+            return $this->get_gradeletter($letters, $gradeitem, $userid);
+        } else {
+            return '-';
+        }
+    }
+    private function get_gradeletter($letters, $gradeitem, $userid) {
+        if (!$gradeitem) {
+            return '-';
+        }
+        $grade = $gradeitem->grades[$userid];
+        // Map to range.
+        $gradeint = $gradeitem->grademax - $gradeitem->grademin;
+        $value = ($gradeint != 100 || $gradeitem->grademin != 0) ? ($grade->grade - $gradeitem->grademin
+        ) * 100 / $gradeint : $grade->grade;
+        // Calculate gradeletter.
+        $value = bounded_number(0, $value, 100); // Just in case.
+        foreach ($letters as $boundary => $letter) {
+            $numboundary = str_replace(',', '.', $boundary);
+            if ($value >= $numboundary) {
+                return format_string($letter);
+            }
+        }
+    }
 }
