@@ -28,8 +28,11 @@ use offlinequiz_result_download\html_download;
  *
  *
  */
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->libdir . '/tablelib.php');
 require_once('results_table.php');
+require_once($CFG->libdir . '/gradelib.php');
 
 class offlinequiz_overview_report extends offlinequiz_default_report {
 
@@ -50,14 +53,14 @@ class offlinequiz_overview_report extends offlinequiz_default_report {
         $groupid = optional_param('group', 0, PARAM_INT);
         
         if($download && $download == "html") {
-        	$selectedresultids = array();
-        	
-        	$offlinequizid = required_param('q', PARAM_INT);
+            $selectedresultids = array();
+            
+            $offlinequizid = required_param('q', PARAM_INT);
 
-        	require_once('download_result_html.php');
-        	$download = new html_download($offlinequizid);
-        	$download->printhtml();
-        	return;
+            require_once('download_result_html.php');
+            $download = new html_download($offlinequizid);
+            $download->printhtml();
+            return;
         }
         
         // Define some strings.
@@ -188,8 +191,7 @@ class offlinequiz_overview_report extends offlinequiz_default_report {
             'timestart', 'offlinegroupid', 'sumgrades'
         );
         $tableheaders = array(
-            '<input type="checkbox" name="toggle" onClick="if (this.checked) {select_all_in(\'DIV\',null,\'tablecontainer\');}
-                else {deselect_all_in(\'DIV\',null,\'tablecontainer\');}"/>', '',
+            '<input type="checkbox" class="select-all-checkbox"/>', '',
             get_string('fullname'), get_string($offlinequizconfig->ID_field),
             get_string('importedon', 'offlinequiz'), get_string('group'),
             get_string('grade', 'offlinequiz')
@@ -213,40 +215,40 @@ class offlinequiz_overview_report extends offlinequiz_default_report {
                 }
             }
         }
-            
+
         // Set up the table in any case, even if we are downloading a file.
         $params = array('offlinequiz' => $offlinequiz, 'noresults' => $noresults, 'pagesize' => $pagesize, 'group' => $groupid
         );
         $table = new offlinequiz_results_table('mod-offlinequiz-report-overview-report', $params);
-        
+
         $table->define_columns($tablecolumns);
         $table->define_headers($tableheaders);
-        $baseurl = new moodle_url($CFG->wwwroot . '/mod/offlinequiz/report.php', 
-                array('mode' => 'overview', 'id' => $cm->id, 'noresults' => $noresults, 'group' => $groupid, 
+        $baseurl = new moodle_url($CFG->wwwroot . '/mod/offlinequiz/report.php',
+                array('mode' => 'overview', 'id' => $cm->id, 'noresults' => $noresults, 'group' => $groupid,
                     'pagesize' => $pagesize
                 ));
         $table->define_baseurl($baseurl);
-        
+
         $table->sortable(true);
         $table->no_sorting('checkbox');
-        
+
         if ($withparticipants) {
             $table->no_sorting('checked');
         }
-        
+
         $table->column_suppress('picture');
         $table->column_suppress('fullname');
-        
+
         $table->column_class('picture', 'picture');
         $table->column_class($offlinequizconfig->ID_field, 'userkey');
         $table->column_class('timestart', 'timestart');
         $table->column_class('offlinegroupid', 'offlinegroupid');
         $table->column_class('sumgrades', 'sumgrades');
-        
+
         $table->set_attribute('cellpadding', '2');
         $table->set_attribute('id', 'attempts');
         $table->set_attribute('class', 'generaltable generalbox');
-        
+
         // Start working -- this is necessary as soon as the niceties are over.
         $table->setup();
 
@@ -285,7 +287,7 @@ class offlinequiz_overview_report extends offlinequiz_default_report {
             // Here starts workshhet headers.
             $headers = array(get_string($offlinequizconfig->ID_field), get_string('firstname'),
                 get_string('lastname'), get_string('importedon', 'offlinequiz'),
-                get_string('group'), get_string('grade', 'offlinequiz')
+                get_string('group'), get_string('grade', 'offlinequiz'), get_string('letter', 'offlinequiz')
             );
             if (!empty($withparticipants)) {
                 $headers[] = get_string('present', 'offlinequiz');
@@ -331,7 +333,7 @@ class offlinequiz_overview_report extends offlinequiz_default_report {
             // Here starts worksheet headers.
             $headers = array(get_string($offlinequizconfig->ID_field), get_string('firstname'),
                 get_string('lastname'), get_string('importedon', 'offlinequiz'),
-                get_string('group'), get_string('grade', 'offlinequiz')
+                get_string('group'), get_string('grade', 'offlinequiz'), get_string('letter', 'offlinequiz')
             );
             if (!empty($withparticipants)) {
                 $headers[] = get_string('present', 'offlinequiz');
@@ -352,9 +354,9 @@ class offlinequiz_overview_report extends offlinequiz_default_report {
             header("Pragma: public");
             echo "\xEF\xBB\xBF"; // UTF-8 BOM.
 
-            $headers = get_string($offlinequizconfig->ID_field) . ", " . get_string('fullname') .
+            $headers = get_string($offlinequizconfig->ID_field) . ", " . get_string('firstname') . ", " . get_string("lastname") .
                      ", " . get_string('importedon', 'offlinequiz') . ", " . get_string('group') .
-                     ", " . get_string('grade', 'offlinequiz');
+                     ", " . get_string('grade', 'offlinequiz') . ", " . get_string('letter', 'offlinequiz');
             if (!empty($withparticipants)) {
                 $headers .= ", " . get_string('present', 'offlinequiz');
             }
@@ -477,26 +479,25 @@ class offlinequiz_overview_report extends offlinequiz_default_report {
         }
 
         $countsql = 'SELECT COUNT(DISTINCT(u.id)) ' . $from . $where;
-            
+
         // Count the records NOW, before funky question grade sorting messes up $from.
         $totalinitials = $DB->count_records_sql($countsql, $params);
-        
+
         // Add extra limits due to initials bar.
         list($ttest, $tparams) = $table->get_sql_where();
-        
+
         if (!empty($ttest)) {
             $where .= ' AND ' . $ttest;
             $countsql .= ' AND ' . $ttest;
             $params = array_merge($params, $tparams);
         }
-        
+
         $total = $DB->count_records_sql($countsql, $params);
-        
+
         // Add extra limits due to sorting by question grade.
         $tablesort = $table->get_sql_sort();
-        
-        $table->pagesize($pagesize, $total);
 
+        $table->pagesize($pagesize, $total);
 
         // Fix some wired sorting.
         if (empty($tablesort)) {
@@ -505,7 +506,6 @@ class offlinequiz_overview_report extends offlinequiz_default_report {
             $sort = ' ORDER BY ' . $tablesort . ', u.id';
         }
 
-       error_log($select . $from . $where . $sort);
         // Fetch the results.
         if (!$download) {
             $results = $DB->get_records_sql($select . $from . $where . $sort, $params,
@@ -529,7 +529,7 @@ class offlinequiz_overview_report extends offlinequiz_default_report {
 
                 if (!empty($result->resultid)) {
                     $checkbox = '<input type="checkbox" name="s' . $result->resultid . '" value="' .
-                             $result->resultid . '" />';
+                             $result->resultid . '"  class="select-multiple-checkbox" />';
                 } else {
                     $checkbox = '';
                 }
@@ -560,9 +560,8 @@ class offlinequiz_overview_report extends offlinequiz_default_report {
                 }
 
                 if (!empty($result) && $result->offlinegroupid) {
-                    $outputgrade = format_float(
-                            $result->sumgrades / $groups[$result->offlinegroupid]->sumgrades *
-                                     $offlinequiz->grade, $offlinequiz->decimalpoints);
+                    $outputgrade = format_float($result->sumgrades /
+                            $groups[$result->offlinegroupid]->sumgrades * $offlinequiz->grade, $offlinequiz->decimalpoints,false);
                 } else {
                     $outputgrade = '-';
                 }
@@ -577,10 +576,10 @@ class offlinequiz_overview_report extends offlinequiz_default_report {
                                  $result->resultid . '">' . $outputgrade . '</a>';
                     }
                     if ($withparticipants) {
-                        $row[] = !empty($checked[$result->userid]) ?
-                                "<img src=\"$CFG->wwwroot/mod/offlinequiz/pix/tick.gif\" alt=\"" .
-                                 get_string('ischecked', 'offlinequiz') . "\">" :
-                                  "<img src=\"$CFG->wwwroot/mod/offlinequiz/pix/cross.gif\" alt=\"" .
+                        $row[] = !empty($checked[$result->userid])
+                                  ? "<img src=\"$CFG->wwwroot/mod/offlinequiz/pix/tick.gif\" alt=\"" .
+                                 get_string('ischecked', 'offlinequiz') . "\">"
+                                  : "<img src=\"$CFG->wwwroot/mod/offlinequiz/pix/cross.gif\" alt=\"" .
                                  get_string('isnotchecked', 'offlinequiz') . "\">";
                     }
                 } else if ($download != 'CSVplus1') {
@@ -593,6 +592,7 @@ class offlinequiz_overview_report extends offlinequiz_default_report {
                             $row[] = '-';
                         }
                     }
+
                 }
 
                 if (!$download) {
@@ -664,7 +664,7 @@ class offlinequiz_overview_report extends offlinequiz_default_report {
                         echo $text . "\n";
                     }
                 }
-            } // End foreach ($results...
+            } // End foreach results...
         } else if (!$download) {
             $table->print_initials_bar();
         }
@@ -674,6 +674,7 @@ class offlinequiz_overview_report extends offlinequiz_default_report {
             $table->finish_html();
 
             if (!empty($results)) {
+                echo '<div>';
                 echo '<form id="downloadoptions" action="report.php" method="get">';
                 echo ' <input type="hidden" name="id" value="' . $cm->id . '" />';
                 echo ' <input type="hidden" name="q" value="' . $offlinequiz->id . '" />';
@@ -687,19 +688,19 @@ class offlinequiz_overview_report extends offlinequiz_default_report {
                     'CSV' => get_string('csvformat', 'offlinequiz'),
                     'CSVplus1' => get_string('csvplus1format', 'offlinequiz'),
                     'CSVpluspoints' => get_string('csvpluspointsformat', 'offlinequiz'),
-                	'html' => get_string('html', 'offlinequiz')
+                    'html' => get_string('html', 'offlinequiz')
                 );
                 print_string('downloadresultsas', 'offlinequiz');
                 echo "</td><td>";
                 echo html_writer::select($options, 'download', '', false);
-                echo ' <input type="submit" value="' . get_string('download') . '" />';
+                echo ' <button type="submit" class="btn btn-primary" > ' . get_string('download') . '</button>';
                 echo ' <script type="text/javascript">' . "\n<!--\n" .
                          'document.getElementById("noscriptmenuaction").style.display = "none";' .
                          "\n-->\n" . '</script>';
                 echo " </td>\n";
                 echo "<td>";
                 echo "</td>\n";
-                echo '</tr></table></form>';
+                echo '</tr></table></form></div>';
             }
         } else if ($download == 'Excel' || $download == 'ODS') {
             $workbook->close();
@@ -709,9 +710,9 @@ class offlinequiz_overview_report extends offlinequiz_default_report {
         }
 
         // Print display options.
-        echo '<div class="controls">';
+        echo '<div class="display-options">';
         echo '<form id="options" action="report.php" method="get">';
-        echo ' <div class=centerbox>';
+        echo ' <div>';
         echo '   <p>' . get_string('displayoptions', 'offlinequiz') . ': </p>';
         echo '   <input type="hidden" name="id" value="' . $cm->id . '" />';
         echo '   <input type="hidden" name="q" value="' . $offlinequiz->id . '" />';
@@ -738,7 +739,7 @@ class offlinequiz_overview_report extends offlinequiz_default_report {
         echo html_writer::select($options, 'noresults', $noresults, '');
         echo '</td></tr>';
         echo '<tr><td colspan="2" align="center">';
-        echo '<input type="submit" value="' . get_string('go') . '" />';
+        echo '<button type="submit" class="btn btn-secondary"> ' . get_string('go') . '</button>';
         echo '</td></tr></table>';
         echo '</div>';
         echo '</form>';
@@ -758,6 +759,7 @@ class offlinequiz_overview_report extends offlinequiz_default_report {
             return '-';
         }
     }
+
     private function get_gradeletter($letters, $gradeitem, $userid) {
         if (!$gradeitem) {
             return '-';
@@ -767,6 +769,7 @@ class offlinequiz_overview_report extends offlinequiz_default_report {
         $gradeint = $gradeitem->grademax - $gradeitem->grademin;
         $value = ($gradeint != 100 || $gradeitem->grademin != 0) ? ($grade->grade - $gradeitem->grademin
         ) * 100 / $gradeint : $grade->grade;
+
         // Calculate gradeletter.
         $value = bounded_number(0, $value, 100); // Just in case.
         foreach ($letters as $boundary => $letter) {
