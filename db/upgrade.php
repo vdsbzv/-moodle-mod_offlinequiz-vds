@@ -1334,12 +1334,7 @@ function xmldb_offlinequiz_upgrade($oldversion = 0) {
             upgrade_mod_savepoint(true, 2017020202, 'offlinequiz');
         }
     }
-<<<<<<< HEAD
-    // TODO migrate old offlinequiz_q_instances maxmarks to new maxmark field in offlinequiz_group_questions.
-    // TODO migrate  offlinequiz_group_questions to fill in page field correctly. For every group use the
-    //      position field to find new pages and insert them.
-    //      Adapt offlinequiz code to handle missing zeros as pagebreaks.
-=======
+
     if ($oldversion < 2017042501) {
         // Changing precision of field pagenumber on table offlinequiz_scanned_pages to (20).
         $table = new xmldb_table('offlinequiz_scanned_pages');
