@@ -1518,8 +1518,6 @@ function xmldb_offlinequiz_upgrade($oldversion = 0) {
     	
     	upgrade_mod_savepoint(true, 2019051401, 'offlinequiz');
     }
-    
->>>>>>> source/MOODLE_37_STABLE
 
     return true;
 }
